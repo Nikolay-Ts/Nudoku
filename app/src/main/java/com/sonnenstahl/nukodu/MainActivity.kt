@@ -43,7 +43,7 @@ fun MainScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            val intent = Intent(context, Buttons::class.java)
+            val intent = Intent(context, NudokuView::class.java)
             context.startActivity(intent)
         }) {
             Text("Open New Screen")
