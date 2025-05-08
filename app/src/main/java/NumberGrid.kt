@@ -20,12 +20,13 @@ import com.sonnenstahl.nukodu.ui.theme.LightBlue
 @Composable
 fun NumberGrid(
     sudokuGrid: Array<IntArray>,
+    numberLeft: Array<Int>,
     selectedCell: Pair<Int, Int>?,
     onCellTap: (Int, Int) -> Unit
 ) {
     val cellSize = 40.dp
     val totalSize = cellSize * 9 //
-    val strokWidth = 10f
+    val strokeWidth = 10f
 
     Box (
         modifier = Modifier

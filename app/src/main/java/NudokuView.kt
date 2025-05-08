@@ -33,6 +33,11 @@ fun NudokuScreen() {
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     val numbersleft = remember { Array(9) { 9} }
 
+    // creates the grid only once
+    LaunchedEffect(Unit) {
+        createNudoku(nudokuGrid, 5)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,6 +52,7 @@ fun NudokuScreen() {
         NumberGrid(
             sudokuGrid = nudokuGrid,
             selectedCell = selectedCell,
+            numberLeft = numbersleft,
             onCellTap = { i, j ->
                 selectedCell = i to j
                 if (currentlySelected in 1..9) {
@@ -63,7 +69,9 @@ fun NudokuScreen() {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             for (i in 1..9) {
-                NumberButtons(number = i, isSelected = (currentlySelected == i)) {
+                NumberButtons(
+                    number = i,
+                    isSelected = (currentlySelected == i)) {
                     currentlySelected = i
                 }
             }
