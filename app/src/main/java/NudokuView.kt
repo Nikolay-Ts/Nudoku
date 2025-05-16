@@ -31,11 +31,12 @@ fun NudokuScreen() {
     var currentlySelected by remember { mutableIntStateOf (0) }
     val nudokuGrid = remember { Array(9) { IntArray(9) } }
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
-    val numbersleft = remember { Array(9) { 9} }
+    // the * is used to tell Compose that this array will be dynamically modified in functions
+    val numbersleft = remember { mutableStateListOf(*Array(9) { 9 } ) }
 
     // creates the grid only once
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, 5)
+        createNudoku(nudokuGrid, 10)
     }
 
     Column(
