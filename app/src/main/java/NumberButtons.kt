@@ -8,6 +8,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import com.sonnenstahl.nukodu.ui.theme.LightBlue
 fun NumberButtons(
     number: Int,
     isSelected: Boolean,
+    numbersLeft: SnapshotStateMap<Int, Int>,
     onClick: () -> Unit // TODO: need to add logic to not allow more than 9 members on board
 ) {
     Button(
@@ -35,6 +37,8 @@ fun NumberButtons(
             .width(25.dp)
             .height(48.dp)
     ) {
-        Text(text = number.toString(), fontSize = 30.sp, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = if (numbersLeft[number]!! == 0) " " else number.toString(),
+            fontSize = 30.sp, style = MaterialTheme.typography.bodyLarge)
     }
 }

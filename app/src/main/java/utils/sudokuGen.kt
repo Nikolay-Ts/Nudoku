@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.utils
 
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import kotlin.random.Random

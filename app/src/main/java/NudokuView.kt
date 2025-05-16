@@ -1,4 +1,5 @@
 package com.sonnenstahl.nukodu
+
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -11,9 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
+import com.sonnenstahl.nukodu.utils.createNudoku
 
 
 class NudokuView : ComponentActivity() {
@@ -33,12 +34,11 @@ fun NudokuScreen() {
     val nudokuGrid = remember { Array(9) { IntArray(9) } }
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     // the * is used to tell Compose that this array will be dynamically modified in functions
-    val numbersleft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
+    val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
 
     // creates the grid only once
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, numbersleft, 10)
-        Log.d("numbers left:", numbersleft.toString())
+        createNudoku(nudokuGrid, numbersLeft, 10)
     }
 
     Column(
@@ -73,9 +73,11 @@ fun NudokuScreen() {
             for (i in 1..9) {
                 NumberButtons(
                     number = i,
-                    isSelected = (currentlySelected == i)) {
+                    isSelected = (currentlySelected == i),
+                    numbersLeft = numbersLeft
+                ) {
                     currentlySelected = i
-                    Log.d("numbers left:", numbersleft.toString())
+                    Log.d("numbers left:", numbersLeft.toString())
                 }
             }
         }

@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.sonnenstahl.nukodu.ui.theme.Background
 
+
+// TODO: highlight the current cell a grey
+
 @Composable
 fun NumberGrid(
     sudokuGrid: Array<IntArray>,
