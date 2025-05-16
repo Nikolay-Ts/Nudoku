@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import kotlin.random.Random
 
 private fun unUsedInBox(
@@ -20,6 +21,7 @@ private fun unUsedInBox(
 
 private fun fillBox(
     grid: Array<IntArray>,
+    numbersLeft: SnapshotStateMap<Int, Int>,
     row: Int,
     col: Int
 ) {
@@ -29,6 +31,7 @@ private fun fillBox(
                 val number = Random.nextInt(1, 10)
                 if (unUsedInBox(grid, row, col, number)) {
                     grid[row + i][col + j] = number
+                    numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
                     break
                 }
             }
@@ -55,13 +58,18 @@ private fun isSafe(grid: Array<IntArray>, i: Int, j: Int, number: Int): Boolean 
             unUsedInBox(grid, i - i % 3, j - j % 3, number)
 }
 
-private fun fillDiagonal(grid: Array<IntArray>) {
+private fun fillDiagonal(grid: Array<IntArray>, numbersLeft: SnapshotStateMap<Int, Int>) {
     for (i in 0..<9 step 3) {
-        fillBox(grid, i, i)
+        fillBox(grid, numbersLeft, i, i)
     }
 }
 
-private fun fillRemaining(grid: Array<IntArray>, i: Int, j: Int): Boolean {
+private fun fillRemaining(
+    grid: Array<IntArray>,
+    numbersLeft: SnapshotStateMap<Int, Int>,
+    i: Int,
+    j: Int): Boolean
+{
     if (i == 9) return true
 
     var row = i
@@ -75,20 +83,28 @@ private fun fillRemaining(grid: Array<IntArray>, i: Int, j: Int): Boolean {
     if (row == 9) return true
 
     if (grid[row][col] != 0) {
-        return fillRemaining(grid, row, col + 1)
+        return fillRemaining(grid, numbersLeft, row, col + 1)
     }
 
     for (number in 1..9) {
         if (isSafe(grid, row, col, number)) {
             grid[row][col] = number
-            if (fillRemaining(grid, row, col + 1)) return true
+            numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
+
+            if (fillRemaining(grid, numbersLeft, row, col + 1)) return true
+
             grid[row][col] = 0
+            numbersLeft[number] = (numbersLeft[number] ?: 0) + 1
         }
     }
     return false
 }
 
-private fun removeNumbers(grid: Array<IntArray>, k: Int) {
+private fun removeNumbers(
+    grid: Array<IntArray>,
+    numbersLeft: SnapshotStateMap<Int, Int>,
+    k: Int)
+{
     var tempk = k
     while (tempk > 0) {
         val cellId = Random.nextInt(0, 81)
@@ -97,6 +113,7 @@ private fun removeNumbers(grid: Array<IntArray>, k: Int) {
         val j = cellId % 9
 
         if (grid[i][j] != 0) {
+            numbersLeft[grid[i][j]] = (numbersLeft[grid[i][j]] ?: 0) + 1
             grid[i][j] = 0
             tempk--
         }
@@ -108,8 +125,12 @@ private fun removeNumbers(grid: Array<IntArray>, k: Int) {
  * a new sudoku pattern with k elements missing in it
  * this should only be called once or will crash the app
  */
-fun createNudoku(grid: Array<IntArray>, k: Int) {
-    fillDiagonal(grid)
-    fillRemaining(grid, 0, 0)
-    removeNumbers(grid, k)
+fun createNudoku(
+    grid: Array<IntArray>,
+    numbersLeft: SnapshotStateMap<Int, Int>,
+    k: Int)
+{
+    fillDiagonal(grid, numbersLeft)
+    fillRemaining(grid, numbersLeft,  0, 0)
+    removeNumbers(grid, numbersLeft, k)
 }

@@ -20,7 +20,6 @@ import com.sonnenstahl.nukodu.ui.theme.Background
 @Composable
 fun NumberGrid(
     sudokuGrid: Array<IntArray>,
-    numberLeft: SnapshotStateList<Int>,
     selectedCell: Pair<Int, Int>?,
     onCellTap: (Int, Int) -> Unit
 ) {

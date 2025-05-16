@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -32,11 +33,12 @@ fun NudokuScreen() {
     val nudokuGrid = remember { Array(9) { IntArray(9) } }
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     // the * is used to tell Compose that this array will be dynamically modified in functions
-    val numbersleft = remember { mutableStateListOf(*Array(9) { 9 } ) }
+    val numbersleft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
 
     // creates the grid only once
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, 10)
+        createNudoku(nudokuGrid, numbersleft, 10)
+        Log.d("numbers left:", numbersleft.toString())
     }
 
     Column(
@@ -53,7 +55,6 @@ fun NudokuScreen() {
         NumberGrid(
             sudokuGrid = nudokuGrid,
             selectedCell = selectedCell,
-            numberLeft = numbersleft,
             onCellTap = { i, j ->
                 selectedCell = i to j
                 if (currentlySelected in 1..9) {
@@ -74,6 +75,7 @@ fun NudokuScreen() {
                     number = i,
                     isSelected = (currentlySelected == i)) {
                     currentlySelected = i
+                    Log.d("numbers left:", numbersleft.toString())
                 }
             }
         }
