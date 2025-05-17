@@ -42,18 +42,32 @@ fun NumberGrid(
             val cellWidth = canvasWidth / 9
             val cellHeight = canvasHeight / 9
 
-            // highlights the currently selected cell
+            // highlights the currently selected cell & like a cross for better visuals
             // must be done first to be rendered as a background
             if (selectedCell != null) {
                 val (selectedRow, selectedCol) = selectedCell
-                drawRect(
-                    color = Color(0xf0ececec),
-                    topLeft = Offset(
-                        x = selectedCol * cellWidth,
-                        y = selectedRow * cellHeight
-                    ),
-                    size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
-                )
+
+                for (row in 0..8) {
+                    drawRect(
+                        color = Color(0xf0ececec),
+                        topLeft = Offset(
+                            x = selectedCol * cellWidth,
+                            y = row * cellHeight
+                        ),
+                        size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                    )
+                }
+
+                for (col in 0..8) {
+                    drawRect(
+                        color = Color(0xf0ececec),
+                        topLeft = Offset(
+                            x = col * cellWidth,
+                            y = selectedRow * cellHeight
+                        ),
+                        size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                    )
+                }
             }
 
             // Draw grid lines
