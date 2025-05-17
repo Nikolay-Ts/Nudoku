@@ -17,19 +17,24 @@ import com.sonnenstahl.nukodu.ui.theme.LightBlue
 
 /**
  * This is to init the numbers for the user to select when to place them
+ * hidden is this is so that the user cannot select a button of a number that
+ * has been used up
  */
 @Composable
 fun NumberButtons(
     number: Int,
     isSelected: Boolean,
+    hidden: Boolean,
     numbersLeft: SnapshotStateMap<Int, Int>,
     onClick: () -> Unit // TODO: need to add logic to not allow more than 9 members on board
 ) {
     Button(
         onClick = onClick,
+        enabled = hidden,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = if (isSelected) LightBlue else Color.Black
+            contentColor = if (isSelected) LightBlue else Color.Black,
+            disabledContainerColor = Color.White
         ),
         elevation = null,
         contentPadding = PaddingValues(0.dp),

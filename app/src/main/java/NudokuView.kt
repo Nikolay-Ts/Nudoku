@@ -73,10 +73,13 @@ fun NudokuScreen() {
             for (i in 1..9) {
                 NumberButtons(
                     number = i,
-                    isSelected = (currentlySelected == i),
+                    isSelected = (currentlySelected == i && numbersLeft[i]!! > 0 ),
+                    hidden = (numbersLeft[i]!! != 0),
                     numbersLeft = numbersLeft
                 ) {
-                    currentlySelected = i
+                    if (numbersLeft[i]!! > 0 ){
+                        currentlySelected = i
+                    }
                     Log.d("numbers left:", numbersLeft.toString())
                 }
             }

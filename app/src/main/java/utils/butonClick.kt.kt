@@ -18,5 +18,4 @@ fun checkSelected(
     }
 }
 
-// TODO: make a new fun that does not allow add the addition to a grid if there are no more numbers
 
