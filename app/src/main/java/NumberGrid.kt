@@ -42,6 +42,20 @@ fun NumberGrid(
             val cellWidth = canvasWidth / 9
             val cellHeight = canvasHeight / 9
 
+            // highlights the currently selected cell
+            // must be done first to be rendered as a background
+            if (selectedCell != null) {
+                val (selectedRow, selectedCol) = selectedCell
+                drawRect(
+                    color = Color(0xf0ececec),
+                    topLeft = Offset(
+                        x = selectedCol * cellWidth,
+                        y = selectedRow * cellHeight
+                    ),
+                    size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                )
+            }
+
             // Draw grid lines
             for (i in 0..9) {
                 val stroke = if (i % 3 == 0) 4f else 1f
@@ -67,6 +81,7 @@ fun NumberGrid(
                     isAntiAlias = true
                     color = android.graphics.Color.BLACK
                     textSize = cellHeight * 0.7f
+
                 }
 
                 for (row in 0..8) {
