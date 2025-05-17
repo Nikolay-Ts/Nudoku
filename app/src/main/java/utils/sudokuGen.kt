@@ -3,6 +3,7 @@ package com.sonnenstahl.nukodu.utils
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import kotlin.random.Random
 
+
 private fun unUsedInBox(
     grid: Array<IntArray>,
     rowStart: Int,
@@ -68,8 +69,8 @@ private fun fillRemaining(
     grid: Array<IntArray>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     i: Int,
-    j: Int): Boolean
-{
+    j: Int
+): Boolean {
     if (i == 9) return true
 
     var row = i
@@ -100,11 +101,13 @@ private fun fillRemaining(
     return false
 }
 
+// TODO: make a pseudo better random removal generator to balance out the removals
+
 private fun removeNumbers(
     grid: Array<IntArray>,
     numbersLeft: SnapshotStateMap<Int, Int>,
-    k: Int)
-{
+    k: Int
+) {
     var tempk = k
     while (tempk > 0) {
         val cellId = Random.nextInt(0, 81)
@@ -120,6 +123,7 @@ private fun removeNumbers(
     }
 }
 
+
 /**
  * This function takes in the 9x9 array and generates
  * a new sudoku pattern with k elements missing in it
@@ -128,8 +132,8 @@ private fun removeNumbers(
 fun createNudoku(
     grid: Array<IntArray>,
     numbersLeft: SnapshotStateMap<Int, Int>,
-    k: Int)
-{
+    k: Int
+) {
     fillDiagonal(grid, numbersLeft)
     fillRemaining(grid, numbersLeft,  0, 0)
     removeNumbers(grid, numbersLeft, k)
