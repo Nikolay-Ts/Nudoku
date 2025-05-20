@@ -2,17 +2,17 @@ package com.sonnenstahl.nukodu.utils
 
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import kotlin.random.Random
-
+import com.sonnenstahl.nukodu.utils.Tile
 
 private fun unUsedInBox(
-    grid: Array<IntArray>,
+    grid: Array<Array<Tile>>,
     rowStart: Int,
     colStart: Int,
     number: Int
 ): Boolean {
     for (i in 0..<3) {
         for (j in 0..<3) {
-            if (grid[rowStart + i][colStart + j] == number) {
+            if ((grid[rowStart + i][colStart + j]).number == number) {
                 return false
             }
         }
@@ -21,7 +21,7 @@ private fun unUsedInBox(
 }
 
 private fun fillBox(
-    grid: Array<IntArray>,
+    grid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     row: Int,
     col: Int
@@ -30,8 +30,11 @@ private fun fillBox(
         for (j in 0..<3) {
             while (true) {
                 val number = Random.nextInt(1, 10)
+                val tile = grid[row + i][col + j]
                 if (unUsedInBox(grid, row, col, number)) {
-                    grid[row + i][col + j] = number
+                    tile.number = number
+                    tile.cell = Pair(i, j)
+                    tile.isCompleted = true
                     numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
                     break
                 }
@@ -40,33 +43,39 @@ private fun fillBox(
     }
 }
 
-private fun unUsedInRow(grid: Array<IntArray>, i: Int, number: Int): Boolean {
-    return number !in grid[i]
-}
-
-private fun unUsedInCol(grid: Array<IntArray>, j: Int, number: Int): Boolean {
-    for (i in 0..<9) {
-        if (grid[i][j] == number) {
+fun unUsedInRow(grid: Array<Array<Tile>>, i: Int, number: Int): Boolean {
+//    return number !in grid[i]
+    for (rowTile in grid[i]) {
+        if (number == rowTile.number) {
             return false
         }
     }
     return true
 }
 
-private fun isSafe(grid: Array<IntArray>, i: Int, j: Int, number: Int): Boolean {
+private fun unUsedInCol(grid: Array<Array<Tile>>, j: Int, number: Int): Boolean {
+    for (i in 0..<9) {
+        if (grid[i][j].number == number) {
+            return false
+        }
+    }
+    return true
+}
+
+private fun isSafe(grid: Array<Array<Tile>>, i: Int, j: Int, number: Int): Boolean {
     return unUsedInRow(grid, i, number) &&
             unUsedInCol(grid, j, number) &&
             unUsedInBox(grid, i - i % 3, j - j % 3, number)
 }
 
-private fun fillDiagonal(grid: Array<IntArray>, numbersLeft: SnapshotStateMap<Int, Int>) {
+private fun fillDiagonal(grid: Array<Array<Tile>>, numbersLeft: SnapshotStateMap<Int, Int>) {
     for (i in 0..<9 step 3) {
         fillBox(grid, numbersLeft, i, i)
     }
 }
 
 private fun fillRemaining(
-    grid: Array<IntArray>,
+    grid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     i: Int,
     j: Int
@@ -83,18 +92,24 @@ private fun fillRemaining(
 
     if (row == 9) return true
 
-    if (grid[row][col] != 0) {
+    if (grid[row][col].number != 0) {
         return fillRemaining(grid, numbersLeft, row, col + 1)
     }
 
     for (number in 1..9) {
         if (isSafe(grid, row, col, number)) {
-            grid[row][col] = number
+            val tile = grid[row][col]
+
+            tile.number = number
+            tile.cell = Pair(row, col)
+            tile.isCompleted = true
+
             numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
 
             if (fillRemaining(grid, numbersLeft, row, col + 1)) return true
 
-            grid[row][col] = 0
+            tile.number = 0
+            tile.isCompleted = false
             numbersLeft[number] = (numbersLeft[number] ?: 0) + 1
         }
     }
@@ -104,7 +119,7 @@ private fun fillRemaining(
 // TODO: make a pseudo better random removal generator to balance out the removals
 
 private fun removeNumbers(
-    grid: Array<IntArray>,
+    grid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     k: Int
 ) {
@@ -114,10 +129,12 @@ private fun removeNumbers(
 
         val i = cellId / 9
         val j = cellId % 9
+        val tile = grid[i][j]
 
-        if (grid[i][j] != 0) {
-            numbersLeft[grid[i][j]] = (numbersLeft[grid[i][j]] ?: 0) + 1
-            grid[i][j] = 0
+        if (tile.number != 0) {
+            numbersLeft[tile.number] = (tile.number ?: 0) + 1
+            tile.number = 0
+            tile.isCompleted = false
             tempk--
         }
     }
@@ -130,7 +147,7 @@ private fun removeNumbers(
  * this should only be called once or will crash the app
  */
 fun createNudoku(
-    grid: Array<IntArray>,
+    grid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     k: Int
 ) {

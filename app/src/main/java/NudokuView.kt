@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
+import com.sonnenstahl.nukodu.utils.Tile
 
 
 class NudokuView : ComponentActivity() {
@@ -31,7 +32,13 @@ class NudokuView : ComponentActivity() {
 @Composable
 fun NudokuScreen() {
     var currentlySelected by remember { mutableIntStateOf (0) }
-    val nudokuGrid = remember { Array(9) { IntArray(9) } }
+    val nudokuGrid = remember {
+        Array(9) { row ->
+            Array(9) { col ->
+                Tile(cell = Pair(row, col))
+            }
+        }
+    }
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     // the * is used to tell Compose that this array will be dynamically modified in functions
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
@@ -58,7 +65,7 @@ fun NudokuScreen() {
             onCellTap = { i, j ->
                 selectedCell = i to j
                 if (currentlySelected in 1..9) {
-                    nudokuGrid[i][j] = currentlySelected
+                    nudokuGrid[i][j].number = currentlySelected
                 }
             }
         )

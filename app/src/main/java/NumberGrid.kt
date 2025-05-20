@@ -16,13 +16,12 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.sonnenstahl.nukodu.ui.theme.Background
+import com.sonnenstahl.nukodu.utils.Tile
 
-
-// TODO: highlight the current cell a grey
 
 @Composable
 fun NumberGrid(
-    sudokuGrid: Array<IntArray>,
+    sudokuGrid: Array<Array<Tile>>,
     selectedCell: Pair<Int, Int>?,
     onCellTap: (Int, Int) -> Unit
 ) {
@@ -100,7 +99,7 @@ fun NumberGrid(
 
                 for (row in 0..8) {
                     for (col in 0..8) {
-                        val number = sudokuGrid[row][col]
+                        val number = sudokuGrid[row][col].number
                         if (number != 0) {
                             val x = col * cellWidth + cellWidth / 2
                             val y = row * cellHeight + cellHeight * 0.7f
