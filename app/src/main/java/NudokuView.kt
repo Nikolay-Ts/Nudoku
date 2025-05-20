@@ -62,10 +62,13 @@ fun NudokuScreen() {
         NumberGrid(
             sudokuGrid = nudokuGrid,
             selectedCell = selectedCell,
+            // TODO: now it has a limit but goes to the negatives. Once it hits zero, move it the next one
+            // TODO: Must be done recursively
             onCellTap = { i, j ->
                 selectedCell = i to j
-                if (currentlySelected in 1..9) {
+                if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted) {
                     nudokuGrid[i][j].number = currentlySelected
+                    numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
                 }
             }
         )
@@ -84,7 +87,7 @@ fun NudokuScreen() {
                     hidden = (numbersLeft[i]!! != 0),
                     numbersLeft = numbersLeft
                 ) {
-                    if (numbersLeft[i]!! > 0 ){
+                    if (numbersLeft[i]!! > 0){
                         currentlySelected = i
                     }
                     Log.d("numbers left:", numbersLeft.toString())
