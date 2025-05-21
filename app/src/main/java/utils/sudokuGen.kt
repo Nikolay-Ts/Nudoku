@@ -146,11 +146,7 @@ private fun removeNumbers(
  * a new sudoku pattern with k elements missing in it
  * this should only be called once or will crash the app
  */
-fun createNudoku(
-    grid: Array<Array<Tile>>,
-    numbersLeft: SnapshotStateMap<Int, Int>,
-    k: Int
-) {
+fun createNudoku(grid: Array<Array<Tile>>, numbersLeft: SnapshotStateMap<Int, Int>, k: Int) {
     fillDiagonal(grid, numbersLeft)
     fillRemaining(grid, numbersLeft,  0, 0)
     removeNumbers(grid, numbersLeft, k)

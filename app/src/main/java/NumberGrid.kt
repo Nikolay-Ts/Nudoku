@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -93,7 +94,6 @@ fun NumberGrid(
                 val paint = android.graphics.Paint().apply {
                     textAlign = android.graphics.Paint.Align.CENTER
                     isAntiAlias = true
-                    color = android.graphics.Color.RED
                     textSize = cellHeight * 0.7f
 
                 }
@@ -103,8 +103,10 @@ fun NumberGrid(
                         val cellTile = sudokuGrid[row][col]
                         val number = cellTile.number
 
-                        if (cellTile.isCompleted) {
-                            paint.color = android.graphics.Color.BLACK
+                        paint.color = if (cellTile.isCompleted) {
+                            android.graphics.Color.BLACK
+                        } else {
+                            android.graphics.Color.RED
                         }
 
                         if (number != 0) {

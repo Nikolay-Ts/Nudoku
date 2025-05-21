@@ -73,6 +73,7 @@ fun NudokuScreen() {
                     cellTile.number = currentlySelected
 
                     cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
+                    Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
 
                     numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
                 }
@@ -96,7 +97,7 @@ fun NudokuScreen() {
                     if (numbersLeft[i]!! > 0){
                         currentlySelected = i
                     }
-                    Log.d("numbers left:", numbersLeft.toString())
+//                    Log.d("numbers left:", numbersLeft.toString())
                 }
             }
         }
