@@ -16,6 +16,8 @@ import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
+import com.sonnenstahl.nukodu.utils.isSafe
+import com.sonnenstahl.nukodu.utils.validateTile
 
 
 class NudokuView : ComponentActivity() {
@@ -66,8 +68,12 @@ fun NudokuScreen() {
             // TODO: Must be done recursively
             onCellTap = { i, j ->
                 selectedCell = i to j
-                if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted) {
-                    nudokuGrid[i][j].number = currentlySelected
+                if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted && numbersLeft[currentlySelected]!! > 0) {
+                    val cellTile = nudokuGrid[i][j]
+                    cellTile.number = currentlySelected
+
+                    cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
+
                     numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
                 }
             }

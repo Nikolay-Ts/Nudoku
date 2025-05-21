@@ -43,7 +43,7 @@ private fun fillBox(
     }
 }
 
-fun unUsedInRow(grid: Array<Array<Tile>>, i: Int, number: Int): Boolean {
+private fun unUsedInRow(grid: Array<Array<Tile>>, i: Int, number: Int): Boolean {
 //    return number !in grid[i]
     for (rowTile in grid[i]) {
         if (number == rowTile.number) {
@@ -62,7 +62,7 @@ private fun unUsedInCol(grid: Array<Array<Tile>>, j: Int, number: Int): Boolean 
     return true
 }
 
-private fun isSafe(grid: Array<Array<Tile>>, i: Int, j: Int, number: Int): Boolean {
+fun isSafe(grid: Array<Array<Tile>>, i: Int, j: Int, number: Int): Boolean {
     return unUsedInRow(grid, i, number) &&
             unUsedInCol(grid, j, number) &&
             unUsedInBox(grid, i - i % 3, j - j % 3, number)
@@ -154,4 +154,30 @@ fun createNudoku(
     fillDiagonal(grid, numbersLeft)
     fillRemaining(grid, numbersLeft,  0, 0)
     removeNumbers(grid, numbersLeft, k)
+}
+
+
+fun validateTile(grid: Array<Array<Tile>>, row: Int, col: Int, number: Int): Boolean {
+    // Check row
+    for (j in 0..<9) {
+        if (j != col && grid[row][j].number == number) return false
+    }
+
+    // Check column
+    for (i in 0..<9) {
+        if (i != row && grid[i][col].number == number) return false
+    }
+
+    // Check box
+    val boxRowStart = row - row % 3
+    val boxColStart = col - col % 3
+    for (i in 0..<3) {
+        for (j in 0..<3) {
+            val r = boxRowStart + i
+            val c = boxColStart + j
+            if ((r != row || c != col) && grid[r][c].number == number) return false
+        }
+    }
+
+    return true
 }

@@ -34,7 +34,7 @@ fun NumberButtons(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = if (isSelected) LightBlue else Color.Black,
-            disabledContainerColor = Color.White
+            disabledContainerColor = Color.Transparent
         ),
         elevation = null,
         contentPadding = PaddingValues(0.dp),

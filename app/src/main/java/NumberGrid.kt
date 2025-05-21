@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.Tile
+import com.sonnenstahl.nukodu.utils.validateTile
 
 
 @Composable
@@ -92,14 +93,20 @@ fun NumberGrid(
                 val paint = android.graphics.Paint().apply {
                     textAlign = android.graphics.Paint.Align.CENTER
                     isAntiAlias = true
-                    color = android.graphics.Color.BLACK
+                    color = android.graphics.Color.RED
                     textSize = cellHeight * 0.7f
 
                 }
 
                 for (row in 0..8) {
                     for (col in 0..8) {
-                        val number = sudokuGrid[row][col].number
+                        val cellTile = sudokuGrid[row][col]
+                        val number = cellTile.number
+
+                        if (cellTile.isCompleted) {
+                            paint.color = android.graphics.Color.BLACK
+                        }
+
                         if (number != 0) {
                             val x = col * cellWidth + cellWidth / 2
                             val y = row * cellHeight + cellHeight * 0.7f
