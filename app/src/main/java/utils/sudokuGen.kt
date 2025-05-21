@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu.utils
 
+import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import kotlin.random.Random
 import com.sonnenstahl.nukodu.utils.Tile
@@ -35,7 +36,7 @@ private fun fillBox(
                     tile.number = number
                     tile.cell = Pair(i, j)
                     tile.isCompleted = true
-                    numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
+                    numbersLeft[number] = numbersLeft[number]!! - 1
                     break
                 }
             }
@@ -43,8 +44,8 @@ private fun fillBox(
     }
 }
 
+//    return number !in grid[i] (same logic)
 private fun unUsedInRow(grid: Array<Array<Tile>>, i: Int, number: Int): Boolean {
-//    return number !in grid[i]
     for (rowTile in grid[i]) {
         if (number == rowTile.number) {
             return false
@@ -104,13 +105,14 @@ private fun fillRemaining(
             tile.cell = Pair(row, col)
             tile.isCompleted = true
 
-            numbersLeft[number] = (numbersLeft[number] ?: 0) - 1
+            numbersLeft[number] = numbersLeft[number]!! - 1
 
             if (fillRemaining(grid, numbersLeft, row, col + 1)) return true
 
+            Log.d("Triggered in Fill Remain", "$numbersLeft" )
             tile.number = 0
             tile.isCompleted = false
-            numbersLeft[number] = (numbersLeft[number] ?: 0) + 1
+            numbersLeft[number] = numbersLeft[number]!! + 1
         }
     }
     return false
@@ -132,7 +134,7 @@ private fun removeNumbers(
         val tile = grid[i][j]
 
         if (tile.number != 0) {
-            numbersLeft[tile.number] = (tile.number ?: 0) + 1
+            numbersLeft[tile.number] = numbersLeft[tile.number]!! + 1
             tile.number = 0
             tile.isCompleted = false
             tempk--

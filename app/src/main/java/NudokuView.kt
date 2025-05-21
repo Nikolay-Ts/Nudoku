@@ -64,18 +64,24 @@ fun NudokuScreen() {
         NumberGrid(
             sudokuGrid = nudokuGrid,
             selectedCell = selectedCell,
-            // TODO: now it has a limit but goes to the negatives. Once it hits zero, move it the next one
-            // TODO: Must be done recursively
+            // TODO: if it is wrong and then you override it, add the overiden number back
             onCellTap = { i, j ->
                 selectedCell = i to j
                 if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted && numbersLeft[currentlySelected]!! > 0) {
                     val cellTile = nudokuGrid[i][j]
+                    val currentCellNumber = cellTile.number
+
                     cellTile.number = currentlySelected
 
+                    if (numbersLeft[currentCellNumber] != null) {
+                        numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
+                    }
+
                     cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
-                    Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
 
                     numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
+                    Log.d("numbers left" ,"$numbersLeft")
+                    Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
                 }
             }
         )
@@ -97,7 +103,6 @@ fun NudokuScreen() {
                     if (numbersLeft[i]!! > 0){
                         currentlySelected = i
                     }
-//                    Log.d("numbers left:", numbersLeft.toString())
                 }
             }
         }
