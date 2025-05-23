@@ -24,13 +24,15 @@ import com.sonnenstahl.nukodu.ui.theme.LightBlue
 fun NumberButtons(
     number: Int,
     isSelected: Boolean,
-    hidden: Boolean,
+    enabled: Boolean,
     numbersLeft: SnapshotStateMap<Int, Int>,
+    canDissapear: SnapshotStateMap<Int, Boolean>,
     onClick: () -> Unit // TODO: need to add logic to not allow more than 9 members on board
 ) {
+    val isEnabled = enabled && !canDissapear[number]!!
     Button(
         onClick = onClick,
-        enabled = hidden,
+        enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = if (isSelected) LightBlue else Color.Black,

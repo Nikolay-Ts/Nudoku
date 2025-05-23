@@ -16,9 +16,13 @@ import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
-import com.sonnenstahl.nukodu.utils.isSafe
 import com.sonnenstahl.nukodu.utils.validateTile
+import kotlinx.coroutines.launch
 
+// TODO: win screen and transtion
+// TODO: erase button
+// TODO: undo?
+// TODO: Timer
 
 class NudokuView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +48,8 @@ fun NudokuScreen() {
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     // the * is used to tell Compose that this array will be dynamically modified in functions
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
+    val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false}.toTypedArray() )}
+    val coroutineScope = rememberCoroutineScope()
 
     // creates the grid only once
     LaunchedEffect(Unit) {
@@ -75,11 +81,29 @@ fun NudokuScreen() {
 
                     if (numbersLeft[currentCellNumber] != null) {
                         numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
+                        // it was 0 and now must be reEnabled
+                        if (numbersLeft[currentCellNumber] == 1) {
+                            numbersDissapear[currentCellNumber] = false
+                        }
                     }
+
 
                     cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
 
                     numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
+                    Log.d("meow", "completed: ${cellTile.isCompleted}, num ${cellTile.number}" )
+
+                    if (numbersLeft[currentlySelected]!! == 0 && !cellTile.isCompleted) {
+                            numbersDissapear[cellTile.number] = true
+                            Log.d("Cannot disappear", "number: ${cellTile.number},${numbersDissapear[cellTile.number]}")
+
+                    }
+
+                    if (numbersLeft[currentlySelected]!! == 0 && cellTile.isCompleted) {
+                            numbersDissapear[cellTile.number] = false
+                    }
+
+
                     Log.d("numbers left" ,"$numbersLeft")
                     Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
                 }
@@ -97,8 +121,9 @@ fun NudokuScreen() {
                 NumberButtons(
                     number = i,
                     isSelected = (currentlySelected == i && numbersLeft[i]!! > 0 ),
-                    hidden = (numbersLeft[i]!! != 0),
-                    numbersLeft = numbersLeft
+                    enabled = (numbersLeft[i]!! != 0),
+                    numbersLeft = numbersLeft,
+                    canDissapear = numbersDissapear
                 ) {
                     if (numbersLeft[i]!! > 0){
                         currentlySelected = i
