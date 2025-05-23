@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu.com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu
 
 import android.os.Bundle
 import android.util.Log
@@ -12,31 +12,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
+import androidx.navigation.NavController
+import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
+import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberGrid
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
 import com.sonnenstahl.nukodu.utils.validateTile
+import utils.GameState
+import utils.Routes
+import utils.gameStateChecker
 
-// TODO: win screen and transtion
 // TODO: erase button
 // TODO: undo?
 // TODO: Timer
 
-class NudokuView : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NukoduTheme {
-                NudokuScreen()
-            }
-        }
-    }
-}
-
 @Composable
-fun NudokuScreen() {
+fun NudokuScreen(navController: NavController) {
+
     var currentlySelected by remember { mutableIntStateOf (0) }
+    var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
+    var errors = remember { mutableIntStateOf(0) }
+
     val nudokuGrid = remember {
         Array(9) { row ->
             Array(9) { col ->
@@ -44,21 +42,21 @@ fun NudokuScreen() {
             }
         }
     }
-    var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
     // the * is used to tell Compose that this array will be dynamically modified in functions
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
     val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false}.toTypedArray() )}
-    val coroutineScope = rememberCoroutineScope()
+    val gameState = remember { mutableStateOf<GameState>(GameState.RUNNING) }
 
-    val isOver = remember { mutableStateOf<Boolean>(false) }
 
     // creates the grid only once
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, numbersLeft, 10)
+        createNudoku(nudokuGrid, numbersLeft, 1)
     }
 
-    LaunchedEffect(isOver) {
-
+    LaunchedEffect(gameState.value) {
+        if (gameState.value == GameState.WON || gameState.value == GameState.LOST) {
+            navController.navigate("${Routes.EndScreen.route}/${gameState.value.name}")
+        }
     }
 
     Column(
@@ -108,8 +106,10 @@ fun NudokuScreen() {
                             numbersDissapear[cellTile.number] = false
                     }
 
+                    gameStateChecker(numbersLeft, errors, gameState)
 
-                    Log.d("numbers left" ,"$numbersLeft")
+
+                    Log.d("GameState" ,"$gameState")
                     Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
                 }
             }

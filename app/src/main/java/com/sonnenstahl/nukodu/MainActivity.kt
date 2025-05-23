@@ -1,6 +1,5 @@
 package com.sonnenstahl.nukodu
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,9 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NudokuView
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
+import utils.Routes
+import androidx.compose.material3.Surface
+import androidx.navigation.compose.*
+import utils.GameState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,20 +37,22 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Routes.Home.route) {
+        // Home
+        composable(Routes.Home.route) {
+            // pass the navController
+            Router(navController = navController)
+        }
+        // Profile
+        composable(Routes.Game.route) {
+            NudokuScreen(navController)
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            val intent = Intent(context, NudokuView::class.java)
-            context.startActivity(intent)
-        }) {
-            Text("Open New Screen")
+        composable("${Routes.EndScreen.route}/{gameState}") { backStackEntry ->
+            val gameStateStr = backStackEntry.arguments?.getString("gameState")
+            val gameState = GameState.valueOf(gameStateStr ?: GameState.LOST.name)
+            EndScreen(gameState)
         }
     }
 }
