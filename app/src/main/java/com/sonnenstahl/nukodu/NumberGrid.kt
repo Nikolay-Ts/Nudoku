@@ -1,14 +1,11 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.com.sonnenstahl.nukodu
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -18,7 +15,6 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.Tile
-import com.sonnenstahl.nukodu.utils.validateTile
 
 
 @Composable

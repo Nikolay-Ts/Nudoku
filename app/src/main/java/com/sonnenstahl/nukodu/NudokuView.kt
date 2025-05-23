@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.com.sonnenstahl.nukodu
 
 import android.os.Bundle
 import android.util.Log
@@ -17,7 +17,6 @@ import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
 import com.sonnenstahl.nukodu.utils.validateTile
-import kotlinx.coroutines.launch
 
 // TODO: win screen and transtion
 // TODO: erase button
@@ -51,9 +50,15 @@ fun NudokuScreen() {
     val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false}.toTypedArray() )}
     val coroutineScope = rememberCoroutineScope()
 
+    val isOver = remember { mutableStateOf<Boolean>(false) }
+
     // creates the grid only once
     LaunchedEffect(Unit) {
         createNudoku(nudokuGrid, numbersLeft, 10)
+    }
+
+    LaunchedEffect(isOver) {
+
     }
 
     Column(

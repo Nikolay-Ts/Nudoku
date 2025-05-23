@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NudokuView
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 
 class MainActivity : ComponentActivity() {

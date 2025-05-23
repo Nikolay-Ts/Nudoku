@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.com.sonnenstahl.nukodu
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height

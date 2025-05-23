@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NudokuView"
+        <activity android:name=".com.sonnenstahl.nukodu.NudokuView"
             android:theme="@style/Theme.Nukodu" />
     </application>
 
