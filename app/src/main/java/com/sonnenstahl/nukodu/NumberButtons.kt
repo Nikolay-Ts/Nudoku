@@ -43,6 +43,7 @@ fun NumberButtons(
         modifier = Modifier
             .width(25.dp)
             .height(48.dp)
+
     ) {
         Text(
             text = if (numbersLeft[number]!! == 0) " " else number.toString(),

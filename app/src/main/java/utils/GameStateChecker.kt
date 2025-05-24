@@ -11,7 +11,7 @@ fun gameStateChecker(
     errors: MutableIntState,
     gameState: MutableState<GameState>
 ) {
-    if (numbersLeft.all { it.value == 0 } && errors.intValue == 3) {
+    if (errors.intValue == 3) {
         gameState.value = GameState.LOST
         return
     }

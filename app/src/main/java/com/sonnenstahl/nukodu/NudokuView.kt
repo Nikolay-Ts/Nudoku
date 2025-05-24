@@ -1,22 +1,20 @@
 package com.sonnenstahl.nukodu
 
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
-import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberGrid
 import com.sonnenstahl.nukodu.ui.theme.Background
-import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
 import com.sonnenstahl.nukodu.utils.validateTile
@@ -33,7 +31,7 @@ fun NudokuScreen(navController: NavController) {
 
     var currentlySelected by remember { mutableIntStateOf (0) }
     var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
-    var errors = remember { mutableIntStateOf(0) }
+    val errors = remember { mutableIntStateOf(0) }
 
     val nudokuGrid = remember {
         Array(9) { row ->
@@ -50,7 +48,7 @@ fun NudokuScreen(navController: NavController) {
 
     // creates the grid only once
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, numbersLeft, 1)
+        createNudoku(nudokuGrid, numbersLeft, 10)
     }
 
     LaunchedEffect(gameState.value) {
@@ -68,58 +66,77 @@ fun NudokuScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        NumberGrid(
-            sudokuGrid = nudokuGrid,
-            selectedCell = selectedCell,
-            // TODO: if it is wrong and then you override it, add the overiden number back
-            onCellTap = { i, j ->
-                selectedCell = i to j
-                if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted && numbersLeft[currentlySelected]!! > 0) {
-                    val cellTile = nudokuGrid[i][j]
-                    val currentCellNumber = cellTile.number
+        Spacer(modifier = Modifier.height(24.dp))
 
-                    cellTile.number = currentlySelected
+        Column(
+            modifier = Modifier
+            .fillMaxWidth()
+            .background(Background)
+            .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "${errors.intValue}/3",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.End,
+                color = Color.LightGray
+            )
 
-                    if (numbersLeft[currentCellNumber] != null) {
-                        numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
-                        // it was 0 and now must be reEnabled
-                        if (numbersLeft[currentCellNumber] == 1) {
-                            numbersDissapear[currentCellNumber] = false
+            NumberGrid(
+                sudokuGrid = nudokuGrid,
+                selectedCell = selectedCell,
+                onCellTap = { i, j ->
+                    selectedCell = i to j
+                    if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted && numbersLeft[currentlySelected]!! > 0) {
+                        val cellTile = nudokuGrid[i][j]
+                        val currentCellNumber = cellTile.number
+
+                        cellTile.number = currentlySelected
+
+                        if (numbersLeft[currentCellNumber] != null) {
+                            numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
+                            // it was 0 and now must be reEnabled
+                            if (numbersLeft[currentCellNumber] == 1) {
+                                numbersDissapear[currentCellNumber] = false
+                            }
                         }
-                    }
 
 
-                    cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
+                        cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
 
-                    numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
-                    Log.d("meow", "completed: ${cellTile.isCompleted}, num ${cellTile.number}" )
+                        numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
+                        Log.d("meow", "completed: ${cellTile.isCompleted}, num ${cellTile.number}" )
 
-                    if (numbersLeft[currentlySelected]!! == 0 && !cellTile.isCompleted) {
+                        if (numbersLeft[currentlySelected]!! == 0 && !cellTile.isCompleted) {
                             numbersDissapear[cellTile.number] = true
                             Log.d("Cannot disappear", "number: ${cellTile.number},${numbersDissapear[cellTile.number]}")
 
-                    }
+                        }
 
-                    if (numbersLeft[currentlySelected]!! == 0 && cellTile.isCompleted) {
+                        if (numbersLeft[currentlySelected]!! == 0 && cellTile.isCompleted) {
                             numbersDissapear[cellTile.number] = false
+                        }
+
+                        if (!cellTile.isCompleted) {
+                            errors.intValue++
+                        }
+
+                        gameStateChecker(numbersLeft, errors, gameState)
+
+
+                        Log.d("GameState" ,"$gameState")
+                        Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
                     }
-
-                    gameStateChecker(numbersLeft, errors, gameState)
-
-
-                    Log.d("GameState" ,"$gameState")
-                    Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
                 }
-            }
-        )
+            )
 
+        }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp, vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             for (i in 1..9) {
