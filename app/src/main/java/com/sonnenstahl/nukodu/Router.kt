@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import utils.Routes
 
 @Composable
-fun Router(navController: NavHostController){
+fun Home(navController: NavHostController){
     Box(
         modifier = Modifier
             .fillMaxSize()

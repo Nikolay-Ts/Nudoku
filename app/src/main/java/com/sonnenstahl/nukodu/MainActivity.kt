@@ -42,7 +42,7 @@ fun MainScreen() {
         // Home
         composable(Routes.Home.route) {
             // pass the navController
-            Router(navController = navController)
+            Home(navController = navController)
         }
         // Profile
         composable(Routes.Game.route) {
