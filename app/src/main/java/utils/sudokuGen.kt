@@ -2,6 +2,7 @@ package com.sonnenstahl.nukodu.utils
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import utils.Pos
 import kotlin.random.Random
 import utils.Tile
 
@@ -34,7 +35,7 @@ private fun fillBox(
                 val tile = grid[row + i][col + j]
                 if (unUsedInBox(grid, row, col, number)) {
                     tile.number = number
-                    tile.cell = Pair(i, j)
+                    tile.cell = Pos(i, j)
                     tile.isCompleted = true
                     numbersLeft[number] = numbersLeft[number]!! - 1
                     break
@@ -102,7 +103,7 @@ private fun fillRemaining(
             val tile = grid[row][col]
 
             tile.number = number
-            tile.cell = Pair(row, col)
+            tile.cell = Pos(row, col)
             tile.isCompleted = true
 
             numbersLeft[number] = numbersLeft[number]!! - 1

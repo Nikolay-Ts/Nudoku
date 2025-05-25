@@ -18,6 +18,7 @@ import com.sonnenstahl.nukodu.utils.createNudoku
 import utils.Tile
 import kotlinx.coroutines.delay
 import utils.GameState
+import utils.Pos
 import utils.Routes
 import utils.placeNumber
 
@@ -31,7 +32,7 @@ fun NudokuScreen(navController: NavController) {
     val nudokuGrid = remember {
         Array(9) { row ->
             Array(9) { col ->
-                Tile(cell = Pair(row, col))
+                Tile(cell = Pos(row, col))
             }
         }
     }
