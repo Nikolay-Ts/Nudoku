@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.createNudoku
-import com.sonnenstahl.nukodu.utils.Tile
+import utils.Tile
 import kotlinx.coroutines.delay
 import utils.GameState
 import utils.Routes

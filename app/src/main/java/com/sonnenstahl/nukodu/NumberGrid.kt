@@ -1,6 +1,5 @@
 package com.sonnenstahl.nukodu
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -14,7 +13,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.sonnenstahl.nukodu.ui.theme.Background
-import com.sonnenstahl.nukodu.utils.Tile
+import utils.Tile
 
 @Composable
 fun NumberGrid(

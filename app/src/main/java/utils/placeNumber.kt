@@ -1,10 +1,8 @@
 package utils
 
-import android.util.Log
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import com.sonnenstahl.nukodu.utils.Tile
 import com.sonnenstahl.nukodu.utils.validateTile
 
 
