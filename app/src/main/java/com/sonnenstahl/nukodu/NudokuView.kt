@@ -1,6 +1,5 @@
 package com.sonnenstahl.nukodu
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -79,9 +78,23 @@ fun NudokuScreen(navController: NavController) {
             NumberGrid(
                 sudokuGrid = nudokuGrid,
                 selectedCell = selectedCell,
+                currentlySelected = currentlySelected,
                 onCellTap = { i, j ->
+                    if (Pair(i, j) == selectedCell) {
+                        selectedCell = null
+                        return@NumberGrid
+                    }
+
                     selectedCell = i to j
-                    placeNumber(i, j, currentlySelected, nudokuGrid, numbersLeft, numbersDissapear, errors, gameState) {
+                    placeNumber(
+                        i, j,
+                        currentlySelected,
+                        nudokuGrid,
+                        numbersLeft,
+                        numbersDissapear,
+                        errors,
+                        gameState
+                    ) {
                         selectedCell = null
                         currentlySelected = 0
                     }

@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,6 +20,7 @@ import com.sonnenstahl.nukodu.utils.Tile
 fun NumberGrid(
     sudokuGrid: Array<Array<Tile>>,
     selectedCell: Pair<Int, Int>?,
+    currentlySelected: Int,
     onCellTap: (Int, Int) -> Unit
 ) {
 
@@ -27,7 +29,7 @@ fun NumberGrid(
     Box(
         modifier = Modifier
             .background(Background)
-            .size(360.dp) // Makes grid square
+            .size(400.dp) // Makes grid square
             .fillMaxWidth()
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -39,18 +41,34 @@ fun NumberGrid(
             val cellWidth = canvasWidth / 9
             val cellHeight = canvasHeight / 9
 
-            // highlight current sell and the cols and rows
+            // highlight all numbers that are the same as the one that I pressed
+            for (row in 0..8) {
+                for (col in 0..8) {
+                    val iNumber = sudokuGrid[row][col]
+                    if (iNumber.number == 0) {
+                        continue
+                    }
+                    if (iNumber.number == currentlySelected) {
+                        drawRect(
+                            color = Color(0xFFECEFF1),
+                            topLeft = Offset(col * cellWidth, row * cellHeight),
+                            size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                        )
+                    }
+                }
+            }
+
             selectedCell?.let { (selectedRow, selectedCol) ->
                 for (row in 0..8) {
                     drawRect(
-                        color = Color(0xf0ececec),
+                        color = Color(0xFFECEFF1),
                         topLeft = Offset(selectedCol * cellWidth, row * cellHeight),
                         size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
                     )
                 }
                 for (col in 0..8) {
                     drawRect(
-                        color = Color(0xf0ececec),
+                        color = Color(0xFFECEFF1),
                         topLeft = Offset(col * cellWidth, selectedRow * cellHeight),
                         size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
                     )

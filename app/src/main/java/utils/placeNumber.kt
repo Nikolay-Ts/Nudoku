@@ -26,6 +26,7 @@ fun placeNumber(
     onComplete: () -> Unit
 ) {
     if (number !in 1..9) return
+
     if (nudokuGrid[i][j].isCompleted || numbersLeft[number]!! <= 0) return
 
     val cellTile = nudokuGrid[i][j]
