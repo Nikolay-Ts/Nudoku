@@ -16,6 +16,7 @@ import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
+import kotlinx.coroutines.delay
 import utils.GameState
 import utils.Routes
 import utils.placeNumber
@@ -37,10 +38,18 @@ fun NudokuScreen(navController: NavController) {
 
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
     val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
-    val gameState = remember { mutableStateOf<GameState>(GameState.RUNNING) }
+    val gameState = remember { mutableStateOf(GameState.RUNNING) }
+    val gameTimeSeconds = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         createNudoku(nudokuGrid, numbersLeft, 10)
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000L)
+            gameTimeSeconds.intValue++
+        }
     }
 
     LaunchedEffect(gameState.value) {
@@ -64,16 +73,37 @@ fun NudokuScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Background)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "${errors.intValue}/3",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.End,
-                color = Color.LightGray
-            )
+
+            // timer and errors
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val minutes = (gameTimeSeconds.intValue % 3600) / 60
+                val seconds = gameTimeSeconds.intValue % 60
+
+                Text(
+                    text = String.format("%02d:%02d", minutes, seconds),
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .padding(vertical = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "${errors.intValue}/3",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    textAlign = TextAlign.End,
+                    color = Color.LightGray
+                )
+            }
 
             NumberGrid(
                 sudokuGrid = nudokuGrid,

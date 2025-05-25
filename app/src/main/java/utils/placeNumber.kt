@@ -58,8 +58,5 @@ fun placeNumber(
 
     gameStateChecker(numbersLeft, errors, gameState)
 
-    Log.d("GameState", "$gameState")
-    Log.d("Validation", "cell: $i, $j\n is valid?:${cellTile.isCompleted}")
-
     onComplete()
 }
