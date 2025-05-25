@@ -17,20 +17,15 @@ import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
-import com.sonnenstahl.nukodu.utils.validateTile
 import utils.GameState
 import utils.Routes
-import utils.gameStateChecker
-
-// TODO: erase button
-// TODO: undo?
-// TODO: Timer
+import utils.placeNumber
 
 @Composable
 fun NudokuScreen(navController: NavController) {
 
-    var currentlySelected by remember { mutableIntStateOf (0) }
-    var selectedCell by remember { mutableStateOf<Pair<Int,Int>?>(null) }
+    var currentlySelected by remember { mutableIntStateOf(0) }
+    var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val errors = remember { mutableIntStateOf(0) }
 
     val nudokuGrid = remember {
@@ -40,13 +35,11 @@ fun NudokuScreen(navController: NavController) {
             }
         }
     }
-    // the * is used to tell Compose that this array will be dynamically modified in functions
-    val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray() ) }
-    val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false}.toTypedArray() )}
+
+    val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
+    val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
     val gameState = remember { mutableStateOf<GameState>(GameState.RUNNING) }
 
-
-    // creates the grid only once
     LaunchedEffect(Unit) {
         createNudoku(nudokuGrid, numbersLeft, 10)
     }
@@ -70,9 +63,9 @@ fun NudokuScreen(navController: NavController) {
 
         Column(
             modifier = Modifier
-            .fillMaxWidth()
-            .background(Background)
-            .padding(horizontal = 16.dp),
+                .fillMaxWidth()
+                .background(Background)
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -88,49 +81,12 @@ fun NudokuScreen(navController: NavController) {
                 selectedCell = selectedCell,
                 onCellTap = { i, j ->
                     selectedCell = i to j
-                    if (currentlySelected in 1..9 && !nudokuGrid[i][j].isCompleted && numbersLeft[currentlySelected]!! > 0) {
-                        val cellTile = nudokuGrid[i][j]
-                        val currentCellNumber = cellTile.number
-
-                        cellTile.number = currentlySelected
-
-                        if (numbersLeft[currentCellNumber] != null) {
-                            numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
-                            // it was 0 and now must be reEnabled
-                            if (numbersLeft[currentCellNumber] == 1) {
-                                numbersDissapear[currentCellNumber] = false
-                            }
-                        }
-
-
-                        cellTile.isCompleted = validateTile(nudokuGrid, i, j, currentlySelected)
-
-                        numbersLeft[currentlySelected] = numbersLeft[currentlySelected]!! - 1
-                        Log.d("meow", "completed: ${cellTile.isCompleted}, num ${cellTile.number}" )
-
-                        if (numbersLeft[currentlySelected]!! == 0 && !cellTile.isCompleted) {
-                            numbersDissapear[cellTile.number] = true
-                            Log.d("Cannot disappear", "number: ${cellTile.number},${numbersDissapear[cellTile.number]}")
-
-                        }
-
-                        if (numbersLeft[currentlySelected]!! == 0 && cellTile.isCompleted) {
-                            numbersDissapear[cellTile.number] = false
-                        }
-
-                        if (!cellTile.isCompleted) {
-                            errors.intValue++
-                        }
-
-                        gameStateChecker(numbersLeft, errors, gameState)
-
-
-                        Log.d("GameState" ,"$gameState")
-                        Log.d("Validation" ,"cell: $i, $j\n is valid?:${cellTile.isCompleted}")
+                    placeNumber(i, j, currentlySelected, nudokuGrid, numbersLeft, numbersDissapear, errors, gameState) {
+                        selectedCell = null
+                        currentlySelected = 0
                     }
                 }
             )
-
         }
 
         Row(
@@ -142,17 +98,20 @@ fun NudokuScreen(navController: NavController) {
             for (i in 1..9) {
                 NumberButtons(
                     number = i,
-                    isSelected = (currentlySelected == i && numbersLeft[i]!! > 0 ),
+                    isSelected = (currentlySelected == i && numbersLeft[i]!! > 0),
                     enabled = (numbersLeft[i]!! != 0),
                     numbersLeft = numbersLeft,
                     canDissapear = numbersDissapear
                 ) {
-                    if (numbersLeft[i]!! > 0){
-                        currentlySelected = i
+                    currentlySelected = if (currentlySelected != i) i else 0
+                    selectedCell?.let { (row, col) ->
+                        placeNumber(row, col, currentlySelected, nudokuGrid, numbersLeft, numbersDissapear, errors, gameState) {
+                            selectedCell = null
+                            currentlySelected = 0
+                        }
                     }
                 }
             }
         }
     }
 }
-
