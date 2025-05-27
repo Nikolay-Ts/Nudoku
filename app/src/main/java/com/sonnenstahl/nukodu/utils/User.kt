@@ -1,4 +1,4 @@
-package utils
+package com.sonnenstahl.nukodu.utils
 
 data class User (
     var wins: Int,

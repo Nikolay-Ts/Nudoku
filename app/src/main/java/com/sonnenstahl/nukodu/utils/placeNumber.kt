@@ -1,4 +1,4 @@
-package utils
+package com.sonnenstahl.nukodu.utils
 
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState

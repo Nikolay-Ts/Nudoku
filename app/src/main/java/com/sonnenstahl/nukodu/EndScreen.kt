@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import utils.GameState
+import com.sonnenstahl.nukodu.utils.GameState
 
 @Composable
 fun EndScreen(gameState: GameState) {

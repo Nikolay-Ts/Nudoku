@@ -1,4 +1,4 @@
-package utils
+package com.sonnenstahl.nukodu.utils
 
 import kotlinx.serialization.Serializable
 

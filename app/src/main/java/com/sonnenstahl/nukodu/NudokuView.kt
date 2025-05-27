@@ -1,5 +1,8 @@
 package com.sonnenstahl.nukodu
 
+import android.content.Context
+import android.util.Log
+import com.sonnenstahl.nukodu.utils.importLoadedGame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -14,27 +17,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
+import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
+import com.sonnenstahl.nukodu.utils.Difficulty
+import com.sonnenstahl.nukodu.utils.Game
 import com.sonnenstahl.nukodu.utils.createNudoku
-import utils.Tile
+import com.sonnenstahl.nukodu.utils.Tile
 import kotlinx.coroutines.delay
-import utils.GameState
-import utils.Pos
-import utils.Routes
-import utils.placeNumber
+import com.sonnenstahl.nukodu.utils.GameState
+import com.sonnenstahl.nukodu.utils.Pos
+import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.loadGame
+import com.sonnenstahl.nukodu.utils.placeNumber
+import com.sonnenstahl.nukodu.utils.saveGame
 
 @Composable
-fun NudokuScreen(navController: NavController) {
+fun NudokuScreen(navController: NavController, context: Context, currentGameFile: Boolean) {
 
     var currentlySelected by remember { mutableIntStateOf(0) }
     var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val errors = remember { mutableIntStateOf(0) }
 
     val nudokuGrid = remember {
-        Array(9) { row ->
-            Array(9) { col ->
-                Tile(cell = Pos(row, col))
-            }
-        }
+        Array(9) { row -> Array(9) { col -> Tile(cell = Pos(row, col)) } }
     }
 
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
@@ -43,7 +47,38 @@ fun NudokuScreen(navController: NavController) {
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        createNudoku(nudokuGrid, numbersLeft, 10)
+        when (currentGameFile) {
+            true -> { // loads the game from disk
+                Log.d("creating meow", "Current Game is true")
+                val game = loadGame(context, CURRENT_GAME_FN)
+                if (game == null) {
+                    navController.navigate(Routes.Home)
+                    return@LaunchedEffect
+                }
+
+                importLoadedGame(
+                    game = game,
+                    nudokuGrid = nudokuGrid,
+                    numbersLeft = numbersLeft,
+                    errors = errors,
+                    gameState = gameState,
+                    gameTimeSeconds = gameTimeSeconds
+                )
+            }
+
+            false -> { // creates a new game and saves to disk
+                Log.d("creating meow", "Current Game is false")
+                createNudoku(nudokuGrid, numbersLeft, 10)
+                val newGame = Game(
+                    difficulty = Difficulty.EASY,
+                    nudokuGrid = nudokuGrid,
+                    errors = errors.intValue,
+                    gameState = gameState.value,
+                    time = gameTimeSeconds.intValue
+                )
+                saveGame(context = context, currentGame = newGame, filename = CURRENT_GAME_FN)
+            }
+        }
     }
 
     LaunchedEffect(Unit) {

@@ -2,9 +2,9 @@ package com.sonnenstahl.nukodu.utils
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import utils.Pos
+import com.sonnenstahl.nukodu.utils.Pos
 import kotlin.random.Random
-import utils.Tile
+import com.sonnenstahl.nukodu.utils.Tile
 
 private fun unUsedInBox(
     grid: Array<Array<Tile>>,

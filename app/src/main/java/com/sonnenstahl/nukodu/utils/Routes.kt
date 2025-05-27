@@ -1,4 +1,4 @@
-package utils
+package com.sonnenstahl.nukodu.utils
 
 
 sealed class Routes(val route: String) {

@@ -8,13 +8,13 @@ import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import utils.Difficulty
-import utils.Game
-import utils.GameState
-import utils.Pos
-import utils.Tile
-import utils.loadGame
-import utils.saveGame
+import com.sonnenstahl.nukodu.utils.Difficulty
+import com.sonnenstahl.nukodu.utils.Game
+import com.sonnenstahl.nukodu.utils.GameState
+import com.sonnenstahl.nukodu.utils.Pos
+import com.sonnenstahl.nukodu.utils.Tile
+import com.sonnenstahl.nukodu.utils.loadGame
+import com.sonnenstahl.nukodu.utils.saveGame
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)

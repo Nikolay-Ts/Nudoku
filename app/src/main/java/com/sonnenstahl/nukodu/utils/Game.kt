@@ -1,4 +1,4 @@
-package utils
+package com.sonnenstahl.nukodu.utils
 
 import kotlinx.serialization.Serializable
 
@@ -15,8 +15,8 @@ enum class Difficulty {
 @Serializable
 data class Game (
     val difficulty: Difficulty,
-    var NudokuGrid: Array<Array<Tile>>,
+    var nudokuGrid: Array<Array<Tile>>,
     var errors: Int,
-    var gamState: GameState,
+    var gameState: GameState,
     var time: Int,
 )

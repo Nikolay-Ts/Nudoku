@@ -12,10 +12,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
-import utils.Routes
+import com.sonnenstahl.nukodu.utils.Routes
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.*
-import utils.GameState
+import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
+import com.sonnenstahl.nukodu.utils.GameState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,11 +43,13 @@ fun MainScreen() {
         // Home
         composable(Routes.Home.route) {
             // pass the navController
-            Home(navController = navController)
+            Home(navController = navController, context = context)
         }
         // Profile
-        composable(Routes.Game.route) {
-            NudokuScreen(navController)
+        composable("${Routes.Game.route}/{isCurrentGame}") { backStackEntry ->
+            val isCurrentGameStr = backStackEntry.arguments?.getString("isCurrentGame")
+            val isCurrentGame = isCurrentGameStr?.toBooleanStrictOrNull() ?: false
+            NudokuScreen(navController, context,  isCurrentGame)
         }
 
         composable("${Routes.EndScreen.route}/{gameState}") { backStackEntry ->

@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.sonnenstahl.nukodu.ui.theme.Background
-import utils.Tile
+import com.sonnenstahl.nukodu.utils.Tile
 
 @Composable
 fun NumberGrid(
