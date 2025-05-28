@@ -88,23 +88,20 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
         while (true) {
             delay(1000L)
             gameTimeSeconds.intValue++
-
-            if (gameTimeSeconds.intValue % 5 == 0) {
-                saveGame.withLock {
-                    updateAndSave(
-                        difficulty = Difficulty.EASY,
-                        nudokuGrid = nudokuGrid,
-                        errors = errors.intValue,
-                        gameState = gameState.value,
-                        time = gameTimeSeconds.intValue,
-                        context = context
-                    )
-                }
+            saveGame.withLock {
+                updateAndSave(
+                    difficulty = Difficulty.EASY,
+                    nudokuGrid = nudokuGrid,
+                    errors = errors.intValue,
+                    gameState = gameState.value,
+                    time = gameTimeSeconds.intValue,
+                    context = context
+                )
             }
         }
     }
 
-    LaunchedEffect(selectedCell, errors.intValue) {
+    LaunchedEffect(numbersLeft, errors.intValue) {
         saveGame.withLock {
             updateAndSave(
                 difficulty = Difficulty.EASY,

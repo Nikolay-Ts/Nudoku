@@ -37,7 +37,10 @@ fun importLoadedGame(
 }
 
 /**
- * This
+ * This is meant to be called every time you want to
+ * save the current gameState to disk. Should be used
+ * with some mutexes if you are saving time, score, error
+ * asynchronously
  */
 fun updateAndSave(
     difficulty: Difficulty,
