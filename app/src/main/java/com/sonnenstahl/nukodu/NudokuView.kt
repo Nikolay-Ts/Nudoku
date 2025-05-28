@@ -19,16 +19,17 @@ import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
 import com.sonnenstahl.nukodu.utils.Difficulty
-import com.sonnenstahl.nukodu.utils.Game
 import com.sonnenstahl.nukodu.utils.createNudoku
 import com.sonnenstahl.nukodu.utils.Tile
 import kotlinx.coroutines.delay
 import com.sonnenstahl.nukodu.utils.GameState
 import com.sonnenstahl.nukodu.utils.Pos
 import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.updateAndSave
 import com.sonnenstahl.nukodu.utils.loadGame
 import com.sonnenstahl.nukodu.utils.placeNumber
-import com.sonnenstahl.nukodu.utils.saveGame
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 @Composable
 fun NudokuScreen(navController: NavController, context: Context, currentGameFile: Boolean) {
@@ -45,6 +46,8 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
     val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
     val gameState = remember { mutableStateOf(GameState.RUNNING) }
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
+
+    val saveGame = remember { Mutex() }
 
     LaunchedEffect(Unit) {
         when (currentGameFile) {
@@ -69,14 +72,14 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
             false -> { // creates a new game and saves to disk
                 Log.d("creating meow", "Current Game is false")
                 createNudoku(nudokuGrid, numbersLeft, 10)
-                val newGame = Game(
+                updateAndSave(
                     difficulty = Difficulty.EASY,
                     nudokuGrid = nudokuGrid,
                     errors = errors.intValue,
                     gameState = gameState.value,
-                    time = gameTimeSeconds.intValue
+                    time = gameTimeSeconds.intValue,
+                    context = context
                 )
-                saveGame(context = context, currentGame = newGame, filename = CURRENT_GAME_FN)
             }
         }
     }
@@ -85,11 +88,48 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
         while (true) {
             delay(1000L)
             gameTimeSeconds.intValue++
+
+            if (gameTimeSeconds.intValue % 5 == 0) {
+                saveGame.withLock {
+                    updateAndSave(
+                        difficulty = Difficulty.EASY,
+                        nudokuGrid = nudokuGrid,
+                        errors = errors.intValue,
+                        gameState = gameState.value,
+                        time = gameTimeSeconds.intValue,
+                        context = context
+                    )
+                }
+            }
         }
     }
 
+    LaunchedEffect(selectedCell, errors.intValue) {
+        saveGame.withLock {
+            updateAndSave(
+                difficulty = Difficulty.EASY,
+                nudokuGrid = nudokuGrid,
+                errors = errors.intValue,
+                gameState = gameState.value,
+                time = gameTimeSeconds.intValue,
+                context = context
+            )
+        }
+    }
+
+
     LaunchedEffect(gameState.value) {
         if (gameState.value == GameState.WON || gameState.value == GameState.LOST) {
+            saveGame.withLock {
+                updateAndSave(
+                    difficulty = Difficulty.EASY,
+                    nudokuGrid = nudokuGrid,
+                    errors = errors.intValue,
+                    gameState = gameState.value,
+                    time = gameTimeSeconds.intValue,
+                    context = context
+                )
+            }
             navController.navigate("${Routes.EndScreen.route}/${gameState.value.name}")
         }
     }

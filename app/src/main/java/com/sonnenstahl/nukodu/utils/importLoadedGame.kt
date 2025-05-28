@@ -1,8 +1,8 @@
 package com.sonnenstahl.nukodu.utils
 
+import android.content.Context
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 /**
@@ -34,4 +34,25 @@ fun importLoadedGame(
             numbersLeft[number] =  numbersLeft[number]!! - 1
         }
     }
+}
+
+/**
+ * This
+ */
+fun updateAndSave(
+    difficulty: Difficulty,
+    nudokuGrid: Array<Array<Tile>>,
+    errors: Int,
+    gameState: GameState,
+    time: Int,
+    context: Context
+) {
+    val newGame = Game(
+        difficulty = difficulty,
+        nudokuGrid = nudokuGrid,
+        errors = errors,
+        gameState = gameState,
+        time = time
+    )
+    saveGame(context = context, currentGame = newGame, filename = CURRENT_GAME_FN)
 }
