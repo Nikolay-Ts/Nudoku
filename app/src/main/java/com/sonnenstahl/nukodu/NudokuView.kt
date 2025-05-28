@@ -35,7 +35,6 @@ import kotlinx.coroutines.sync.withLock
 
 @Composable
 fun NudokuScreen(navController: NavController, context: Context, currentGameFile: Boolean) {
-
     var currentlySelected by remember { mutableIntStateOf(0) }
     var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val errors = remember { mutableIntStateOf(0) }
@@ -56,7 +55,6 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
     LaunchedEffect(Unit) {
         when (currentGameFile) {
             true -> { // loads the game from disk
-                Log.d("creating meow", "Current Game is true")
                 val game = loadGame(context, CURRENT_GAME_FN)
                 if (game == null) {
                     navController.navigate(Routes.Home)
@@ -74,7 +72,6 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
             }
 
             false -> { // creates a new game and saves to disk
-                Log.d("creating meow", "Current Game is false")
                 createNudoku(nudokuGrid, numbersLeft, 10)
                 updateAndSave(
                     difficulty = Difficulty.EASY,
@@ -192,6 +189,15 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                         return@NumberGrid
                     }
 
+
+                    if (eraserMode.value) {
+                        val number = nudokuGrid[i][j].number
+                        if (number != 0) {
+                            numbersLeft[number] = numbersLeft[number]!! + 1
+                            nudokuGrid[i][j].number = 0
+                        }
+                    }
+
                     selectedCell = i to j
                     placeNumber(
                         i, j,
@@ -200,7 +206,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                         numbersLeft,
                         numbersDissapear,
                         errors,
-                        gameState
+                        gameState,
                     ) {
                         selectedCell = null
                         currentlySelected = 0
@@ -216,7 +222,10 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { eraserMode.value = !eraserMode.value },
+                onClick = {
+                    eraserMode.value = !eraserMode.value
+                    Log.d("Meow Meow", "${eraserMode.value}")
+                          },
                 modifier = Modifier.size(100.dp),
                 colors  = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent
@@ -248,7 +257,15 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                 ) {
                     currentlySelected = if (currentlySelected != i) i else 0
                     selectedCell?.let { (row, col) ->
-                        placeNumber(row, col, currentlySelected, nudokuGrid, numbersLeft, numbersDissapear, errors, gameState) {
+                        placeNumber(
+                            row, col,
+                            currentlySelected,
+                            nudokuGrid,
+                            numbersLeft,
+                            numbersDissapear,
+                            errors,
+                            gameState,
+                        ) {
                             selectedCell = null
                             currentlySelected = 0
                         }

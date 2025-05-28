@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu.utils
 
+import android.util.Log
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -24,7 +25,6 @@ fun placeNumber(
     onComplete: () -> Unit
 ) {
     if (number !in 1..9) return
-
     if (nudokuGrid[i][j].isCompleted || numbersLeft[number]!! <= 0) return
 
     val cellTile = nudokuGrid[i][j]
