@@ -5,6 +5,8 @@ import android.util.Log
 import com.sonnenstahl.nukodu.utils.importLoadedGame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -46,6 +48,8 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
     val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
     val gameState = remember { mutableStateOf(GameState.RUNNING) }
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
+
+    val eraserMode = remember { mutableStateOf(false) }
 
     val saveGame = remember { Mutex() }
 
@@ -204,6 +208,29 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                 }
             )
         }
+
+        // eraser and pause buttons
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 20.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { eraserMode.value = !eraserMode.value },
+                modifier = Modifier.size(100.dp),
+                colors  = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                )
+            ) {
+                val iconFile = if (eraserMode.value) "selected_eraser.svg" else "eraser.svg"
+                SvgImageFromAssets(
+                    filepath = iconFile,
+                    modifier = Modifier.size(60.dp),
+                    scale = 5.0F
+                )
+            }
+            
+        }   
 
         Row(
             modifier = Modifier

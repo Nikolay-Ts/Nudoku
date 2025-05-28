@@ -31,6 +31,3 @@ fun EndScreen(gameState: GameState) {
         }
     }
 }
-
-
-

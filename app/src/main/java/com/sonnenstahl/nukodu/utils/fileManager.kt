@@ -7,7 +7,6 @@ import kotlinx.serialization.decodeFromString
 
 const val CURRENT_GAME_FN: String = "current_game.json";
 
-
 fun saveGame(context: Context, currentGame: Game, filename: String? = CURRENT_GAME_FN) {
     val jsonString = Json.encodeToString(currentGame)
     context.openFileOutput(filename, Context.MODE_PRIVATE).use {
@@ -28,3 +27,8 @@ fun loadGame(context: Context, filename: String? = CURRENT_GAME_FN): Game? {
         null
     }
 }
+
+/**
+ * deletes a file and returns true if it was deleted, false if not
+ */
+fun deleteFile(context: Context, filename: String? = CURRENT_GAME_FN) = context.deleteFile(filename)
