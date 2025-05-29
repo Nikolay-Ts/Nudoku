@@ -11,6 +11,10 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 
+
+/**
+ * Give it the data and title and it will plot it
+ */
 @Composable
 fun PieChartView(data: List<PieEntry>, title: String, modifier: Modifier = Modifier.size(250.dp)) {
     AndroidView(factory = { context ->
