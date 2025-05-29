@@ -58,7 +58,7 @@ fun MainScreen() {
         composable("${Routes.EndScreen.route}/{gameState}") { backStackEntry ->
             val gameStateStr = backStackEntry.arguments?.getString("gameState")
             val gameState = GameState.valueOf(gameStateStr ?: GameState.LOST.name)
-            EndScreen(gameState)
+            EndScreen(navController, gameState)
         }
     }
 }
