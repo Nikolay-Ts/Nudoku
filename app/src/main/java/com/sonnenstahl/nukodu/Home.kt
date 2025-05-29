@@ -9,9 +9,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
-import com.sonnenstahl.GameModeBottomSheet
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
-import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.Game
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.loadGame
@@ -24,7 +22,7 @@ fun Home(navController: NavHostController, context: Context) {
 
     var showSheet by remember { mutableStateOf(false) }
 
-    // overlay to display the different dificulty
+    // overlay to display the different difficulty
     GameModeBottomSheet(showSheet, onDismiss = {showSheet = false}, navController)
 
     Box(

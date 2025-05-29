@@ -35,7 +35,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @Composable
-fun NudokuScreen(navController: NavController, currentGameFile: Boolean ,difficulty: Difficulty) {
+fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficulty: Difficulty) {
     var currentlySelected by remember { mutableIntStateOf(0) }
     var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val errors = remember { mutableIntStateOf(0) }
@@ -133,7 +133,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean ,difficu
                     context = context
                 )
             }
-            navController.navigate("${Routes.EndScreen.route}/${gameState.value.name}")
+            navController.navigate("${Routes.EndScreen.route}/${gameState.value.name}/${difficulty.name}")
         }
     }
 

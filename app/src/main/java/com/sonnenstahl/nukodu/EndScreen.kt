@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,19 +22,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.sonnenstahl.GameModeBottomSheet
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
+import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.GameState
 import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.USER_FN
 import com.sonnenstahl.nukodu.utils.deleteFile
+import com.sonnenstahl.nukodu.utils.loadUser
+import com.sonnenstahl.nukodu.utils.saveUser
 
 @Composable
-fun EndScreen(navController: NavController, gameState: GameState) {
+fun EndScreen(navController: NavController, gameState: GameState, difficulty: Difficulty) {
     BackHandler { /*PREVENTS GOING BACK TO GAME*/}
 
     var showSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
     deleteFile(context = context, filename = CURRENT_GAME_FN)
+
+    if (gameState == GameState.WON) {
+        updateUserWins(context = context, difficulty = difficulty, USER_FN)
+    }
 
     Box(
         modifier = Modifier
@@ -63,7 +71,7 @@ fun EndScreen(navController: NavController, gameState: GameState) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { navController.navigate(Routes.Home) }) {
+            Button(onClick = { navController.navigate(Routes.Home.route) }) {
                 Text("Home")
             }
 
@@ -78,4 +86,18 @@ fun EndScreen(navController: NavController, gameState: GameState) {
             navController = navController
         )
     }
+}
+
+fun updateUserWins(context: Context, difficulty: Difficulty, filename: String? = USER_FN) {
+    // this should not happen, as we have already inited a User when creating the game
+    val user = loadUser(context = context, filename = filename) ?: return
+
+    when (difficulty) {
+        Difficulty.EASY -> user.easyWins++
+        Difficulty.MEDIUM -> user.mediumWins++
+        Difficulty.HARD -> user.hardWins++
+        Difficulty.EXPERT -> user.expertWins++
+    }
+
+    saveUser(context = context, user = user)
 }
