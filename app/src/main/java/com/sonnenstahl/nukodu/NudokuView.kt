@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
@@ -34,22 +35,20 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @Composable
-fun NudokuScreen(navController: NavController, context: Context, currentGameFile: Boolean) {
+fun NudokuScreen(navController: NavController, currentGameFile: Boolean ,difficulty: Difficulty) {
     var currentlySelected by remember { mutableIntStateOf(0) }
     var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val errors = remember { mutableIntStateOf(0) }
-
     val nudokuGrid = remember {
         Array(9) { row -> Array(9) { col -> Tile(cell = Pos(row, col)) } }
     }
-
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
-    val numbersDissapear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
+    val numbersDisappear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
     val gameState = remember { mutableStateOf(GameState.RUNNING) }
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
-
     val eraserMode = remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
     val saveGame = remember { Mutex() }
 
     LaunchedEffect(Unit) {
@@ -60,7 +59,6 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                     navController.navigate(Routes.Home)
                     return@LaunchedEffect
                 }
-
                 importLoadedGame(
                     game = game,
                     nudokuGrid = nudokuGrid,
@@ -72,7 +70,14 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
             }
 
             false -> { // creates a new game and saves to disk
-                createNudoku(nudokuGrid, numbersLeft, 10)
+                val removeNum = when (difficulty) {
+                    Difficulty.EASY -> 20
+                    Difficulty.MEDIUM -> 30
+                    Difficulty.HARD -> 40
+                    Difficulty.EXPERT -> 50
+                }
+
+                createNudoku(nudokuGrid, numbersLeft, removeNum)
                 updateAndSave(
                     difficulty = Difficulty.EASY,
                     nudokuGrid = nudokuGrid,
@@ -91,7 +96,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
             gameTimeSeconds.intValue++
             saveGame.withLock {
                 updateAndSave(
-                    difficulty = Difficulty.EASY,
+                    difficulty = difficulty,
                     nudokuGrid = nudokuGrid,
                     errors = errors.intValue,
                     gameState = gameState.value,
@@ -105,7 +110,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
     LaunchedEffect(numbersLeft, errors.intValue) {
         saveGame.withLock {
             updateAndSave(
-                difficulty = Difficulty.EASY,
+                difficulty = difficulty,
                 nudokuGrid = nudokuGrid,
                 errors = errors.intValue,
                 gameState = gameState.value,
@@ -120,7 +125,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
         if (gameState.value == GameState.WON || gameState.value == GameState.LOST) {
             saveGame.withLock {
                 updateAndSave(
-                    difficulty = Difficulty.EASY,
+                    difficulty = difficulty,
                     nudokuGrid = nudokuGrid,
                     errors = errors.intValue,
                     gameState = gameState.value,
@@ -189,8 +194,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                         return@NumberGrid
                     }
 
-
-                    if (eraserMode.value) {
+                    if (eraserMode.value && !nudokuGrid[i][j].isCompleted ) {
                         val number = nudokuGrid[i][j].number
                         if (number != 0) {
                             numbersLeft[number] = numbersLeft[number]!! + 1
@@ -204,7 +208,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                         currentlySelected,
                         nudokuGrid,
                         numbersLeft,
-                        numbersDissapear,
+                        numbersDisappear,
                         errors,
                         gameState,
                     ) {
@@ -253,7 +257,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                     isSelected = (currentlySelected == i && numbersLeft[i]!! > 0),
                     enabled = (numbersLeft[i]!! != 0),
                     numbersLeft = numbersLeft,
-                    canDissapear = numbersDissapear
+                    canDissapear = numbersDisappear
                 ) {
                     currentlySelected = if (currentlySelected != i) i else 0
                     selectedCell?.let { (row, col) ->
@@ -262,7 +266,7 @@ fun NudokuScreen(navController: NavController, context: Context, currentGameFile
                             currentlySelected,
                             nudokuGrid,
                             numbersLeft,
-                            numbersDissapear,
+                            numbersDisappear,
                             errors,
                             gameState,
                         ) {

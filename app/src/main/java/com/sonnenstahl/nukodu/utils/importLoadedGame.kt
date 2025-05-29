@@ -6,7 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 /**
- * This takes all of the feeatures form the loaded game from disk and upadtes
+ * This takes all of the features form the loaded game from disk and updates
  * all of the snapshot variables to be rendered. The numbers left are not saved
  * as you can deduce how many you have left by subtracting each time.
  */

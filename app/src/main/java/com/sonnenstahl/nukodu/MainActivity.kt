@@ -16,6 +16,7 @@ import com.sonnenstahl.nukodu.utils.Routes
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.*
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
+import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.GameState
 
 class MainActivity : ComponentActivity() {
@@ -46,10 +47,12 @@ fun MainScreen() {
             Home(navController = navController, context = context)
         }
         // Profile
-        composable("${Routes.Game.route}/{isCurrentGame}") { backStackEntry ->
+        composable("${Routes.Game.route}/{isCurrentGame}/{difficulty}") { backStackEntry ->
             val isCurrentGameStr = backStackEntry.arguments?.getString("isCurrentGame")
             val isCurrentGame = isCurrentGameStr?.toBooleanStrictOrNull() ?: false
-            NudokuScreen(navController, context,  isCurrentGame)
+            val difficultyStr = backStackEntry.arguments?.getString("difficulty")
+            val difficulty = Difficulty.valueOf(difficultyStr ?: Difficulty.EASY.name)
+            NudokuScreen(navController, isCurrentGame, difficulty)
         }
 
         composable("${Routes.EndScreen.route}/{gameState}") { backStackEntry ->
