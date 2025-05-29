@@ -16,7 +16,12 @@ import com.caverock.androidsvg.SVG
  * convert the svg to a bitmap and convert and display it as an Image
  */
 @Composable
-fun SvgImageFromAssets(filepath: String, modifier: Modifier = Modifier, scale: Float = 10f) {
+fun SvgImageFromAssets(
+    filepath: String,
+    modifier: Modifier = Modifier,
+    scale: Float = 10f,
+    description: String? = null
+) {
     val context = LocalContext.current
     val bitmap by remember(filepath) {
         mutableStateOf(renderSvgToBitmap(context, filepath, scale))
@@ -24,7 +29,7 @@ fun SvgImageFromAssets(filepath: String, modifier: Modifier = Modifier, scale: F
 
     Image(
         bitmap = bitmap.asImageBitmap(),
-        contentDescription = null,
+        contentDescription = description,
         modifier = modifier
     )
 }

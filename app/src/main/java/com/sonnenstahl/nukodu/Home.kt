@@ -31,6 +31,16 @@ fun Home(navController: NavHostController, context: Context) {
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
+        Button(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(vertical = 20.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            onClick = { navController.navigate(Routes.Profile.route) }
+        ) {
+            SvgImageFromAssets("profile-icon.svg", scale = 5.0f)
+        }
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(20.dp))
 

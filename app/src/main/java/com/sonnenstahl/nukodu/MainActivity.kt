@@ -41,12 +41,11 @@ fun MainScreen() {
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Routes.Home.route) {
-        // Home
         composable(Routes.Home.route) {
             // pass the navController
             Home(navController = navController, context = context)
         }
-        // Profile
+
         composable("${Routes.Game.route}/{isCurrentGame}/{difficulty}") { backStackEntry ->
             val isCurrentGameStr = backStackEntry.arguments?.getString("isCurrentGame")
             val isCurrentGame = isCurrentGameStr?.toBooleanStrictOrNull() ?: false
@@ -61,6 +60,10 @@ fun MainScreen() {
             val difficultyStr = backStackEntry.arguments?.getString("difficulty")
             val difficulty = Difficulty.valueOf(difficultyStr ?: Difficulty.EASY.name)
             EndScreen(navController, gameState, difficulty)
+        }
+
+        composable(Routes.Profile.route) {
+            ProfileScreen()
         }
     }
 }
