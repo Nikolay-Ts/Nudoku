@@ -213,7 +213,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean ,difficu
                         gameState,
                     ) {
                         selectedCell = null
-                        currentlySelected = 0
                     }
                 }
             )

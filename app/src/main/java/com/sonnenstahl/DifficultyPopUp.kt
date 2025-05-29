@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.Routes
 

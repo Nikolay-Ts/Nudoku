@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,15 +18,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sonnenstahl.GameModeBottomSheet
+import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
 import com.sonnenstahl.nukodu.utils.GameState
 import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.deleteFile
 
 @Composable
 fun EndScreen(navController: NavController, gameState: GameState) {
+    BackHandler { /*PREVENTS GOING BACK TO GAME*/}
+
     var showSheet by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    deleteFile(context = context, filename = CURRENT_GAME_FN)
 
     Box(
         modifier = Modifier
