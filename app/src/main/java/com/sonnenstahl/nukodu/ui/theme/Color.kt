@@ -11,3 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 val LightBlue = Color(0xff99ccff)
 val Background = Color(0xFFFFFBFE)
+
+// colors for the plots in ProfileScreen
+// TODO: chose the colors.
+val darkBrow = Color(0xFF6650a4)

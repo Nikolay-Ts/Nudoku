@@ -27,8 +27,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavController
 import com.github.mikephil.charting.data.BarDataSet
+import com.sonnenstahl.nukodu.ui.theme.darkBrow
 import com.sonnenstahl.nukodu.utils.GameData
+import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.deleteFile
 import com.sonnenstahl.nukodu.utils.saveUser
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
@@ -38,12 +42,22 @@ enum class ChartMode(val label: String) {
     BY_DAY_OF_WEEK("By Day of Week")
 }
 
+/**
+ * to display the current data about the user
+ * - win/loss ration
+ * - which ones have the highest wins
+ * - how often does he win in a year/week
+ * - best and worst time for each difficulty
+ *
+ * this should also allow to export the data as a csv or delete it
+ */
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
     val user = loadUser(context, "mock_user.json")
     var chartMode =  remember { mutableStateOf(ChartMode.BY_MONTH) }
     val scrollState = rememberScrollState() // this is to scroll the screen
+    val deleteDialog = remember { mutableStateOf(false) }
 
     if (user == null) {
         Column(
@@ -53,6 +67,17 @@ fun ProfileScreen() {
             Text("There is still no data that we have about you :(")
         }
         return
+    }
+
+    if (deleteDialog.value) {
+        DeleteDialog(
+            showDelete = deleteDialog.value,
+            onDelete = {
+                        deleteFile(context, USER_FN)
+                        navController.navigate(Routes.Home.route)
+                       },
+            onDismiss = { deleteDialog.value = false }
+        )
     }
 
     val wins = user.easy.wins + user.medium.wins + user.hard.wins + user.expert.wins
@@ -79,7 +104,6 @@ fun ProfileScreen() {
         BarEntry(2f, user.hard.wins.toFloat()),
         BarEntry(3f, user.expert.wins.toFloat())
     )
-
 
     val byMonthData: Pair<List<BarEntry>, List<String>> = run {
         val grouped = user.gameCompletionDates
@@ -171,8 +195,8 @@ fun ProfileScreen() {
 
             Spacer(Modifier.padding(10.dp))
 
-            Button(onClick = { /*TODO*/ }) {
-                Text("Reset Data")
+            Button(onClick = { deleteDialog.value = true }) {
+                Text("Delete Account")
             }
         }
 
