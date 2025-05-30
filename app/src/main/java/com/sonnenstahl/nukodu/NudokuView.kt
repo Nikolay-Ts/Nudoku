@@ -28,6 +28,7 @@ import kotlinx.coroutines.delay
 import com.sonnenstahl.nukodu.utils.GameState
 import com.sonnenstahl.nukodu.utils.Pos
 import com.sonnenstahl.nukodu.utils.Routes
+import com.sonnenstahl.nukodu.utils.deleteFile
 import com.sonnenstahl.nukodu.utils.updateAndSave
 import com.sonnenstahl.nukodu.utils.loadGame
 import com.sonnenstahl.nukodu.utils.placeNumber
@@ -51,6 +52,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
 
     val context = LocalContext.current
     val saveGame = remember { Mutex() }
+    val timeUpdate = remember { Mutex() }
 
     LaunchedEffect(Unit) {
         when (currentGameFile) {
@@ -94,7 +96,10 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L)
-            gameTimeSeconds.intValue++
+            if (gameState.value == GameState.RUNNING) {
+                gameTimeSeconds.intValue++
+            }
+
             saveGame.withLock {
                 updateAndSave(
                     difficulty = difficulty,
@@ -138,131 +143,86 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Background)
-                .padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            // timer and errors
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val minutes = (gameTimeSeconds.intValue % 3600) / 60
-                val seconds = gameTimeSeconds.intValue % 60
-
-                Text(
-                    text = String.format("%02d:%02d", minutes, seconds),
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .padding(vertical = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = "${errors.intValue}/3",
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    textAlign = TextAlign.End,
-                    color = Color.LightGray
-                )
-            }
-
-            NumberGrid(
-                sudokuGrid = nudokuGrid,
-                selectedCell = selectedCell,
-                currentlySelected = currentlySelected,
-                onCellTap = { i, j ->
-                    if (Pair(i, j) == selectedCell) {
-                        selectedCell = null
-                        return@NumberGrid
-                    }
-
-                    if (eraserMode.value && !nudokuGrid[i][j].isCompleted ) {
-                        val number = nudokuGrid[i][j].number
-                        if (number != 0) {
-                            numbersLeft[number] = numbersLeft[number]!! + 1
-                            nudokuGrid[i][j].number = 0
-                        }
-                    }
-
-                    selectedCell = i to j
-                    placeNumber(
-                        i, j,
-                        currentlySelected,
-                        nudokuGrid,
-                        numbersLeft,
-                        numbersDisappear,
-                        errors,
-                        gameState,
-                    ) {
-                        selectedCell = null
-                    }
-                }
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (gameState.value == GameState.PAUSED) {
+            PauseConfirmationDialog(
+                onContinue = { gameState.value = GameState.RUNNING },
+                onQuit = {
+                    Log.d("DELTE",  "${deleteFile(context, CURRENT_GAME_FN)}")
+                    navController.popBackStack()
+                },
+                onDismiss = { gameState.value = GameState.RUNNING }
             )
         }
 
-        // eraser and pause buttons
-        Row(
+        Column(
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 20.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .fillMaxSize()
+                .background(Background)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = {
-                    eraserMode.value = !eraserMode.value
-                    Log.d("Meow Meow", "${eraserMode.value}")
-                          },
-                modifier = Modifier.size(100.dp),
-                colors  = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                )
-            ) {
-                val iconFile = if (eraserMode.value) "selected_eraser.svg" else "eraser.svg"
-                SvgImageFromAssets(
-                    filepath = iconFile,
-                    modifier = Modifier.size(60.dp),
-                    scale = 5.0F
-                )
-            }
-            
-        }   
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 20.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            for (i in 1..9) {
-                NumberButtons(
-                    number = i,
-                    isSelected = (currentlySelected == i && numbersLeft[i]!! > 0),
-                    enabled = (numbersLeft[i]!! != 0),
-                    numbersLeft = numbersLeft,
-                    canDissapear = numbersDisappear
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Background)
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                // timer and errors
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    currentlySelected = if (currentlySelected != i) i else 0
-                    selectedCell?.let { (row, col) ->
+                    val minutes = (gameTimeSeconds.intValue % 3600) / 60
+                    val seconds = gameTimeSeconds.intValue % 60
+
+                    Text(
+                        text = String.format("%02d:%02d", minutes, seconds),
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "${errors.intValue}/3",
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        textAlign = TextAlign.End,
+                        color = Color.LightGray
+                    )
+                }
+
+                NumberGrid(
+                    sudokuGrid = nudokuGrid,
+                    selectedCell = selectedCell,
+                    currentlySelected = currentlySelected,
+                    onCellTap = { i, j ->
+                        if (Pair(i, j) == selectedCell) {
+                            selectedCell = null
+                            return@NumberGrid
+                        }
+
+                        if (eraserMode.value && !nudokuGrid[i][j].isCompleted) {
+                            val number = nudokuGrid[i][j].number
+                            if (number != 0) {
+                                numbersLeft[number] = numbersLeft[number]!! + 1
+                                nudokuGrid[i][j].number = 0
+                            }
+                        }
+
+                        selectedCell = i to j
                         placeNumber(
-                            row, col,
+                            i, j,
                             currentlySelected,
                             nudokuGrid,
                             numbersLeft,
@@ -271,11 +231,92 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                             gameState,
                         ) {
                             selectedCell = null
-                            currentlySelected = 0
+                        }
+                    }
+                )
+            }
+
+            // eraser and pause buttons
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 20.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        eraserMode.value = !eraserMode.value
+                        Log.d("Meow Meow", "${eraserMode.value}")
+                    },
+                    modifier = Modifier.size(100.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
+                    val iconFile = if (eraserMode.value) "selected_eraser.svg" else "eraser.svg"
+                    SvgImageFromAssets(
+                        filepath = iconFile,
+                        modifier = Modifier.size(60.dp),
+                        scale = 5.0F
+                    )
+                }
+
+                Button(
+                    modifier = Modifier.size(100.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    onClick = {
+                    when (gameState.value) {
+                        GameState.RUNNING -> gameState.value = GameState.PAUSED
+                        GameState.PAUSED -> gameState.value = GameState.RUNNING
+                        else -> {}
+                    }
+                }) {
+                    val iconFile = if (gameState.value == GameState.RUNNING ) "pause.svg" else "play.svg"
+                    SvgImageFromAssets(
+                        filepath = iconFile,
+                        modifier = Modifier.size(60.dp),
+                        scale = 5.0F
+                    )
+                }
+
+
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 20.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                for (i in 1..9) {
+                    NumberButtons(
+                        number = i,
+                        isSelected = (currentlySelected == i && numbersLeft[i]!! > 0),
+                        enabled = (numbersLeft[i]!! != 0),
+                        numbersLeft = numbersLeft,
+                        canDissapear = numbersDisappear
+                    ) {
+                        currentlySelected = if (currentlySelected != i) i else 0
+                        selectedCell?.let { (row, col) ->
+                            placeNumber(
+                                row, col,
+                                currentlySelected,
+                                nudokuGrid,
+                                numbersLeft,
+                                numbersDisappear,
+                                errors,
+                                gameState,
+                            ) {
+                                selectedCell = null
+                                currentlySelected = 0
+                            }
                         }
                     }
                 }
             }
         }
+
+        GoBack { navController.popBackStack() }
     }
 }

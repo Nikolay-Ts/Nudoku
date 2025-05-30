@@ -17,7 +17,14 @@ import com.sonnenstahl.nukodu.utils.loadGame
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavHostController, context: Context) {
-    val currentGame: Game? = loadGame(context = context, filename = CURRENT_GAME_FN)
+    var currentGame by remember { mutableStateOf<Game?>(null) }
+
+    // this is to prevent a race condition as otherwise, when quiting
+    // the file here is read faster than NudokuView can delete it
+    LaunchedEffect(Unit) {
+        currentGame = loadGame(context = context, filename = CURRENT_GAME_FN)
+    }
+
     val isCurrentGame = currentGame != null
 
     var showSheet by remember { mutableStateOf(false) }

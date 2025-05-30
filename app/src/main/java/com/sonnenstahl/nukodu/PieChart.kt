@@ -16,11 +16,15 @@ import com.github.mikephil.charting.utils.ColorTemplate
  * Give it the data and title and it will plot it
  */
 @Composable
-fun PieChartView(data: List<PieEntry>, title: String, modifier: Modifier = Modifier.size(250.dp)) {
+fun PieChartView(
+    data: List<PieEntry>,
+    title: String,
+    colors: List<Int> = ColorTemplate.COLORFUL_COLORS.toList(),
+    modifier: Modifier = Modifier.size(250.dp)) {
     AndroidView(factory = { context ->
         PieChart(context).apply {
             val dataSet = PieDataSet(data, title)
-            dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+            dataSet.colors = colors
             this.data = PieData(dataSet)
 
             description.isEnabled = false
