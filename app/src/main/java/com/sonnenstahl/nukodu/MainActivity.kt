@@ -54,12 +54,13 @@ fun MainScreen() {
             NudokuScreen(navController, isCurrentGame, difficulty)
         }
 
-        composable("${Routes.EndScreen.route}/{gameState}/{difficulty}") { backStackEntry ->
+        composable("${Routes.EndScreen.route}/{gameState}/{difficulty}/{time}") { backStackEntry ->
             val gameStateStr = backStackEntry.arguments?.getString("gameState")
             val gameState = GameState.valueOf(gameStateStr ?: GameState.LOST.name)
             val difficultyStr = backStackEntry.arguments?.getString("difficulty")
             val difficulty = Difficulty.valueOf(difficultyStr ?: Difficulty.EASY.name)
-            EndScreen(navController, gameState, difficulty)
+            val time = backStackEntry.arguments?.getInt("time") ?: 0
+            EndScreen(navController, gameState, difficulty, time)
         }
 
         composable(Routes.Profile.route) {

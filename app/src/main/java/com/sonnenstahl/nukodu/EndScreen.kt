@@ -22,17 +22,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.recyclerview.widget.DiffUtil
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
 import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.GameState
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.USER_FN
+import com.sonnenstahl.nukodu.utils.User
 import com.sonnenstahl.nukodu.utils.deleteFile
 import com.sonnenstahl.nukodu.utils.loadUser
 import com.sonnenstahl.nukodu.utils.saveUser
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun EndScreen(navController: NavController, gameState: GameState, difficulty: Difficulty) {
+fun EndScreen(
+    navController: NavController,
+    gameState: GameState,
+    difficulty: Difficulty,
+    time: Int
+) {
     BackHandler { /*PREVENTS GOING BACK TO GAME*/}
 
     var showSheet by remember { mutableStateOf(false) }
@@ -40,7 +50,7 @@ fun EndScreen(navController: NavController, gameState: GameState, difficulty: Di
     deleteFile(context = context, filename = CURRENT_GAME_FN)
 
     if (gameState == GameState.WON) {
-        updateUserWins(context = context, difficulty = difficulty, USER_FN)
+        updateUserWins(context, difficulty, time, USER_FN)
     }
 
     Box(
@@ -88,15 +98,38 @@ fun EndScreen(navController: NavController, gameState: GameState, difficulty: Di
     }
 }
 
-fun updateUserWins(context: Context, difficulty: Difficulty, filename: String? = USER_FN) {
+fun updateUserWins(
+    context: Context,
+    difficulty: Difficulty,
+    time : Int,
+    filename: String? = USER_FN
+) {
     // this should not happen, as we have already inited a User when creating the game
     val user = loadUser(context = context, filename = filename) ?: return
 
-    when (difficulty) {
-        Difficulty.EASY -> user.easyWins++
-        Difficulty.MEDIUM -> user.mediumWins++
-        Difficulty.HARD -> user.hardWins++
-        Difficulty.EXPERT -> user.expertWins++
+    val data = when (difficulty) {
+        Difficulty.EASY -> user.easy
+        Difficulty.MEDIUM -> user.medium
+        Difficulty.HARD -> user.hard
+        Difficulty.EXPERT -> user.expert
+    }
+
+    data.wins++
+
+    if (data.bestTime == 0 || time < data.bestTime) {
+        data.bestTime = time
+    }
+
+    if (time > data.worstTime) {
+        data.worstTime = time
+    }
+
+    val totalTime = data.avgTime * (data.wins - 1) + time
+    data.avgTime = totalTime / data.wins
+
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    user.gameCompletionDates.apply {
+        add(today)
     }
 
     saveUser(context = context, user = user)

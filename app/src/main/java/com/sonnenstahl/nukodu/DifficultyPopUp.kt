@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.utils.Difficulty
+import com.sonnenstahl.nukodu.utils.GameData
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.USER_FN
 import com.sonnenstahl.nukodu.utils.User
@@ -75,22 +76,54 @@ fun GameModeBottomSheet(
     }
 }
 
-fun updateAndSaveUser(context: Context, difficulty: Difficulty, filename: String? = USER_FN) {
+fun updateAndSaveUser(
+    context: Context,
+    difficulty: Difficulty,
+    filename: String? = USER_FN
+) {
     val user = loadUser(context = context, filename = filename)
 
     val updatedUser = if (user == null) {
         when (difficulty) {
-            Difficulty.EASY -> User(0, 1, 0, 0, 0, 0, 0, 0)
-            Difficulty.MEDIUM -> User(0, 0, 0, 1, 0, 0, 0, 0)
-            Difficulty.HARD -> User(0, 0, 0, 0, 0, 1, 0, 0)
-            Difficulty.EXPERT -> User(0, 0, 0, 0, 0, 0, 0, 1)
+            Difficulty.EASY -> User(
+                easy = GameData(0, 1, 0, 0, 0),
+                medium = GameData(0, 0, 0, 0, 0),
+                hard = GameData(0, 0, 0, 0, 0),
+                expert = GameData(0, 0, 0, 0, 0)
+            )
+            Difficulty.MEDIUM -> User(
+                easy = GameData(0, 0, 0, 0, 0),
+                medium = GameData(0, 1, 0, 0, 0),
+                hard = GameData(0, 0, 0, 0, 0),
+                expert = GameData(0, 0, 0, 0, 0)
+            )
+            Difficulty.HARD -> User(
+                easy = GameData(0, 0, 0, 0, 0),
+                medium = GameData(0, 0, 0, 0, 0),
+                hard = GameData(0, 1, 0, 0, 0),
+                expert = GameData(0, 0, 0, 0, 0)
+            )
+            Difficulty.EXPERT -> User(
+                easy = GameData(0, 0, 0, 0, 0),
+                medium = GameData(0, 0, 0, 0, 0),
+                hard = GameData(0, 0, 0, 0, 0),
+                expert = GameData(0, 1, 0, 0, 0)
+            )
         }
     } else {
         when (difficulty) {
-            Difficulty.EASY -> user.copy(easyTries = user.easyTries + 1)
-            Difficulty.MEDIUM -> user.copy(mediumTries = user.mediumTries + 1)
-            Difficulty.HARD -> user.copy(hardTries = user.hardTries + 1)
-            Difficulty.EXPERT -> user.copy(expertTries = user.expertTries + 1)
+            Difficulty.EASY -> user.copy(
+                easy = user.easy.copy(tries = user.easy.tries + 1)
+            )
+            Difficulty.MEDIUM -> user.copy(
+                medium = user.medium.copy(tries = user.medium.tries + 1)
+            )
+            Difficulty.HARD -> user.copy(
+                hard = user.hard.copy(tries = user.hard.tries + 1)
+            )
+            Difficulty.EXPERT -> user.copy(
+                expert = user.expert.copy(tries = user.expert.tries + 1)
+            )
         }
     }
 

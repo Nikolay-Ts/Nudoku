@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu
 
+import android.graphics.Color
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,14 +15,16 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 fun BarChart(
     entries: List<BarEntry>,
     labels: List<String>,
-    modifier: Modifier = Modifier
+    title: String,
+    colors: List<Int>? = ColorTemplate.MATERIAL_COLORS.toList(),
+    modifier: Modifier = Modifier,
 ) {
     AndroidView(
         modifier = modifier.then(Modifier.size(300.dp)),
         factory = { context ->
             BarChart(context).apply {
-                val dataSet = BarDataSet(entries, "Wins per Difficulty").apply {
-                    colors = ColorTemplate.MATERIAL_COLORS.toList()
+                val dataSet = BarDataSet(entries, title).apply {
+                    this.colors = colors
                     valueTextSize = 14f
                 }
 
