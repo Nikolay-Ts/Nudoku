@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import com.github.mikephil.charting.data.BarDataSet
 import com.sonnenstahl.nukodu.ui.theme.darkBrow
+import com.sonnenstahl.nukodu.utils.ExportCsvButton
 import com.sonnenstahl.nukodu.utils.GameData
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.deleteFile
@@ -189,9 +190,7 @@ fun ProfileScreen(navController: NavController) {
                 .padding(top = 60.dp, bottom = 40.dp)
 
         ) {
-            Button(onClick = { /*TODO*/ }) {
-                Text("Export as CSV")
-            }
+            ExportCsvButton(user, context)
 
             Spacer(Modifier.padding(10.dp))
 
