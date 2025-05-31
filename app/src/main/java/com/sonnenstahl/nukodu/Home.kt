@@ -14,7 +14,6 @@ import com.sonnenstahl.nukodu.utils.Game
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.loadGame
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavHostController, context: Context) {
     var currentGame by remember { mutableStateOf<Game?>(null) }
@@ -26,7 +25,6 @@ fun Home(navController: NavHostController, context: Context) {
     }
 
     val isCurrentGame = currentGame != null
-
     var showSheet by remember { mutableStateOf(false) }
 
     // overlay to display the different difficulty

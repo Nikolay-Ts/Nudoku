@@ -148,8 +148,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
             PauseConfirmationDialog(
                 onContinue = { gameState.value = GameState.RUNNING },
                 onQuit = {
-                    Log.d("DELTE",  "${deleteFile(context, CURRENT_GAME_FN)}")
-                    navController.popBackStack()
+                    navController.navigate(Routes.Home.route)
                 },
                 onDismiss = { gameState.value = GameState.RUNNING }
             )
@@ -229,6 +228,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                             numbersDisappear,
                             errors,
                             gameState,
+                            context,
                         ) {
                             selectedCell = null
                         }
@@ -307,6 +307,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                                 numbersDisappear,
                                 errors,
                                 gameState,
+                                context,
                             ) {
                                 selectedCell = null
                                 currentlySelected = 0
@@ -317,6 +318,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
             }
         }
 
-        GoBack { navController.popBackStack() }
+        GoBack { navController.navigate(Routes.Home.route) }
     }
 }

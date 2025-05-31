@@ -56,14 +56,15 @@ enum class ChartMode(val label: String) {
 @Composable
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
-    val user = loadUser(context, "mock_user.json")
+    val user = loadUser(context, USER_FN)
     val chartMode = remember { mutableStateOf(ChartMode.BY_DAY_OF_WEEK) }
     val scrollState = rememberScrollState() // this is to scroll the screen
     val deleteDialog = remember { mutableStateOf(false) }
 
     if (user == null) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(5.dp)
         ) {
             GoBack { navController.popBackStack() }
             SvgImageFromAssets("sad-circle.svg", description = "sad-circle")
