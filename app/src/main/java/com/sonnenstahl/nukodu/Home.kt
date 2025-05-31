@@ -53,6 +53,8 @@ fun Home(navController: NavHostController, context: Context) {
             SvgImageFromAssets("profile-icon.svg", scale = 5.0f)
         }
 
+        NudokuLogo(modifier = Modifier.padding(20.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
