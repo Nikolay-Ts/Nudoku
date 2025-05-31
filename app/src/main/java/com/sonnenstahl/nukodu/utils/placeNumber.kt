@@ -31,6 +31,7 @@ fun placeNumber(
 
     val cellTile = nudokuGrid[i][j]
     val currentCellNumber = cellTile.number
+    val checkingNumber = cellTile.number
 
     cellTile.number = number
 
@@ -72,7 +73,7 @@ fun placeNumber(
         numbersDissapear[cellTile.number] = false
     }
 
-    if (!cellTile.isCompleted) {
+    if (!cellTile.isCompleted && number != checkingNumber) {
         errors.intValue++
     }
 

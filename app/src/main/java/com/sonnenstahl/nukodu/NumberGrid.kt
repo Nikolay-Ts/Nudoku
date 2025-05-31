@@ -43,16 +43,36 @@ fun NumberGrid(
             // highlight all numbers that are the same as the one that I pressed
             for (row in 0..8) {
                 for (col in 0..8) {
-                    val iNumber = sudokuGrid[row][col]
-                    if (iNumber.number == 0) {
+                    val iNumber = sudokuGrid[row][col].number
+                    if (iNumber == 0) {
                         continue
                     }
-                    if (iNumber.number == currentlySelected) {
+                    if (iNumber == currentlySelected) {
                         drawRect(
                             color = Color(0xFFECEFF1),
                             topLeft = Offset(col * cellWidth, row * cellHeight),
                             size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
                         )
+                    }
+                }
+            }
+
+            if (selectedCell != null ) {
+                // highlight the same numbers as the one in the current cell
+                val selectedCellNumber = sudokuGrid[selectedCell.first][selectedCell.second].number
+                for (row in 0..8) {
+                    for (col in 0..8) {
+                        val iNumber = sudokuGrid[row][col].number
+                        if (iNumber == 0) {
+                            continue
+                        }
+                        if (iNumber == selectedCellNumber) {
+                            drawRect(
+                                color = Color(0xFFECEFF1),
+                                topLeft = Offset(col * cellWidth, row * cellHeight),
+                                size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                            )
+                        }
                     }
                 }
             }

@@ -150,13 +150,13 @@ fun ProfileScreen(navController: NavController) {
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-
-
             Text(
                 "Stats About Your Games!", Modifier
                     .padding(bottom = 30.dp, top = 50.dp)
                     .align(Alignment.CenterHorizontally)
             )
+
+            // pie chart
             Row(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
@@ -187,6 +187,7 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // wins w.r.t days of week / months
             Column {
                 when (chartMode.value) {
                     ChartMode.BY_DAY_OF_WEEK -> BarChart(
@@ -208,7 +209,7 @@ fun ProfileScreen(navController: NavController) {
                     onModeSelected = { chartMode.value = it })
             }
 
-
+            // delete or export account
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

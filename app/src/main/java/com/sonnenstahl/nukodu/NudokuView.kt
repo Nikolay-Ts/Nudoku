@@ -52,7 +52,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
 
     val context = LocalContext.current
     val saveGame = remember { Mutex() }
-    val timeUpdate = remember { Mutex() }
 
     LaunchedEffect(Unit) {
         when (currentGameFile) {
@@ -148,6 +147,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
             PauseConfirmationDialog(
                 onContinue = { gameState.value = GameState.RUNNING },
                 onQuit = {
+                    deleteFile(context, CURRENT_GAME_FN)
                     navController.navigate(Routes.Home.route)
                 },
                 onDismiss = { gameState.value = GameState.RUNNING }
@@ -217,6 +217,16 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                                 numbersLeft[number] = numbersLeft[number]!! + 1
                                 nudokuGrid[i][j].number = 0
                             }
+                            selectedCell = null
+                            return@NumberGrid
+                        }
+
+                        // this is so that when a user wants to see all of the numbers
+                        // for a specific cell, it will not highlight the cells of the currently
+                        // chosen number
+                        if (nudokuGrid[i][j].number != currentlySelected && nudokuGrid[i][j].isCompleted) {
+                            currentlySelected = 0
+
                         }
 
                         selectedCell = i to j
@@ -245,7 +255,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                 Button(
                     onClick = {
                         eraserMode.value = !eraserMode.value
-                        Log.d("Meow Meow", "${eraserMode.value}")
+                        currentlySelected = 0
                     },
                     modifier = Modifier.size(100.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -298,7 +308,14 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                         canDissapear = numbersDisappear
                     ) {
                         currentlySelected = if (currentlySelected != i) i else 0
+                        eraserMode.value = false
+
                         selectedCell?.let { (row, col) ->
+                            if (currentlySelected != nudokuGrid[row][col].number) {
+                                selectedCell = null
+                                return@NumberButtons
+                            }
+
                             placeNumber(
                                 row, col,
                                 currentlySelected,
