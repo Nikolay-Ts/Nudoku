@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.capitalize
 import androidx.navigation.NavController
 import com.sonnenstahl.nukodu.ui.theme.WinsPieChart
 import com.sonnenstahl.nukodu.ui.theme.daysOfWeekColor
@@ -38,6 +39,7 @@ import com.sonnenstahl.nukodu.ui.theme.winLosPie
 import com.sonnenstahl.nukodu.utils.ExportCsvButton
 import com.sonnenstahl.nukodu.utils.Routes
 import com.sonnenstahl.nukodu.utils.deleteFile
+import kotlinx.datetime.toLocalDateTime
 
 enum class ChartMode(val label: String) {
     BY_MONTH("By Month"),
@@ -46,10 +48,10 @@ enum class ChartMode(val label: String) {
 
 /**
  * to display the current data about the user
+ * best and worst time for each difficulty
  * - win/loss ration
  * - which ones have the highest wins
  * - how often does he win in a year/week
- * - best and worst time for each difficulty
  *
  * this should also allow to export the data as a csv or delete it
  */
@@ -60,6 +62,7 @@ fun ProfileScreen(navController: NavController) {
     val chartMode = remember { mutableStateOf(ChartMode.BY_DAY_OF_WEEK) }
     val scrollState = rememberScrollState() // this is to scroll the screen
     val deleteDialog = remember { mutableStateOf(false) }
+
 
     if (user == null) {
         Column(
@@ -83,6 +86,16 @@ fun ProfileScreen(navController: NavController) {
             onDismiss = { deleteDialog.value = false }
         )
     }
+
+    val timesMap = mapOf(
+        "Easy" to user.easy,
+        "Medium" to user.medium,
+        "Hard" to user.hard,
+        "Expert" to user.expert
+    )
+
+    val bestTimeMap = timesMap.minByOrNull { it.value.bestTime }
+
 
     val wins = user.easy.wins + user.medium.wins + user.hard.wins + user.expert.wins
     val total = user.easy.tries + user.medium.tries + user.hard.tries + user.expert.tries
@@ -158,9 +171,22 @@ fun ProfileScreen(navController: NavController) {
                     .align(Alignment.CenterHorizontally)
             )
 
+            Text(
+                "In total you have played",
+                Modifier
+                    .padding(top = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(
+                "$total games!",
+                Modifier
+                    .padding(top = 10.dp, bottom = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
             // pie chart
             Row(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 10.dp)
             ) {
                 if (winLPieEntry.isNotEmpty()) {
                     PieChartView(
@@ -181,6 +207,27 @@ fun ProfileScreen(navController: NavController) {
                 }
             }
 
+            val mostWonModeLabel = mapOf(
+                "Easy" to user.easy.wins,
+                "Medium" to user.medium.wins,
+                "Hard" to user.hard.wins,
+                "Expert" to user.expert.wins
+            ).maxByOrNull { it.value }?.key ?: "None"
+
+
+            Text(
+                "You are best at the",
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(
+                "$mostWonModeLabel game mode!",
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
             BarChart(
                 types,
                 listOf("Easy", "Medium", "Hard", "Expert"),
@@ -188,6 +235,33 @@ fun ProfileScreen(navController: NavController) {
                 colors = WinsPieChart.map { it.toArgb() },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // ensures that it will not just show 00:00 as the best time
+            // this displays the best and worst times
+            val bestTime = bestTimeMap?.value?.bestTime!!
+            val bestTimeLabel = bestTimeMap.key
+            if (bestTime > 0) {
+                Text(
+                    "Overall Best Time",
+                    Modifier
+                        .padding(top = 15.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                val minutes = (bestTime % 3600) / 60
+                val seconds = bestTime % 60
+                val formattedTime = String.format("$bestTimeLabel mode: %02d:%02d", minutes, seconds)
+
+                Text(
+                    formattedTime,
+                    Modifier
+                        .padding(bottom = 10.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
+            TimeComparisonChart(user = user)
+
 
             // wins w.r.t days of week / months
             Column {

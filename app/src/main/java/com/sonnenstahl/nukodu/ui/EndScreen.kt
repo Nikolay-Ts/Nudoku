@@ -1,7 +1,6 @@
 package com.sonnenstahl.nukodu.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -40,6 +39,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+/**
+ * Shows user stats fot the current game if they won
+ * Allows user to check their overall stats, play again or go back to Home
+ */
 @Composable
 fun EndScreen(
     navController: NavController,
@@ -48,13 +51,12 @@ fun EndScreen(
     time: Int,
     errors: Int
 ) {
-    BackHandler(enabled = false) { /*PREVENT GOIN BACK*/}
+    BackHandler(enabled = false) { /*PREVENT GOING BACK*/}
 
     var showSheet by remember { mutableStateOf(false) }
     val isBestTime = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    Log.d("ENDSCREEN", "t $time, e $errors")
     deleteFile(context = context, filename = CURRENT_GAME_FN)
 
     if (gameState == GameState.WON) {

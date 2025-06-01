@@ -17,7 +17,7 @@ data class User (
 data class GameData(
     var wins: Int,
     var tries: Int,
-    var bestTime: Int = 0,
+    var bestTime: Int = Int.MAX_VALUE,
     var worstTime: Int = 0,
     var avgTime: Int = 0
 )
