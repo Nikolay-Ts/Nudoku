@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

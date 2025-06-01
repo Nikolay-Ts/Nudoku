@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background

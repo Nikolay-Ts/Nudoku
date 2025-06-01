@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu.com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -26,13 +26,12 @@ fun NumberButtons(
     isSelected: Boolean,
     enabled: Boolean,
     numbersLeft: SnapshotStateMap<Int, Int>,
-    canDissapear: SnapshotStateMap<Int, Boolean>,
-    onClick: () -> Unit // TODO: need to add logic to not allow more than 9 members on board
+    onClick: () -> Unit
 ) {
-    val isEnabled = enabled && !canDissapear[number]!!
+
     Button(
         onClick = onClick,
-        enabled = isEnabled,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             contentColor = if (isSelected) LightBlue else Color.Black,

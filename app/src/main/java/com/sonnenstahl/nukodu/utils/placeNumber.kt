@@ -20,7 +20,6 @@ fun placeNumber(
     number: Int,
     nudokuGrid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
-    numbersDissapear: SnapshotStateMap<Int, Boolean>,
     errors: MutableIntState,
     gameState: MutableState<GameState>,
     context: Context,
@@ -38,7 +37,6 @@ fun placeNumber(
     if (numbersLeft[currentCellNumber] != null) {
         numbersLeft[currentCellNumber] = numbersLeft[currentCellNumber]!! + 1
         if (numbersLeft[currentCellNumber] == 1) {
-            numbersDissapear[currentCellNumber] = false
         }
     }
 
@@ -63,14 +61,6 @@ fun placeNumber(
         } else { // fallback for old devices
             vibrator.vibrate(500)
         }
-    }
-
-    if (numbersLeft[number]!! == 0 && !cellTile.isCompleted) {
-        numbersDissapear[cellTile.number] = true
-    }
-
-    if (numbersLeft[number]!! == 0 && cellTile.isCompleted) {
-        numbersDissapear[cellTile.number] = false
     }
 
     if (!cellTile.isCompleted && number != checkingNumber) {

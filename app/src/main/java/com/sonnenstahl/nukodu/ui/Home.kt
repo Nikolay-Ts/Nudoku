@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -67,7 +67,6 @@ fun Home(navController: NavHostController, context: Context) {
                 val sharedModifier = Modifier
                     .width(300.dp)
                     .height(60.dp)
-
 
                 Spacer(modifier = Modifier.height(20.dp))
 

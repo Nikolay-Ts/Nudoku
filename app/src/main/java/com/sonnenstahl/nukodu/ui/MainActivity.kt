@@ -1,4 +1,4 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,7 +15,6 @@ import com.sonnenstahl.nukodu.ui.theme.NukoduTheme
 import com.sonnenstahl.nukodu.utils.Routes
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.*
-import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
 import com.sonnenstahl.nukodu.utils.Difficulty
 import com.sonnenstahl.nukodu.utils.GameState
 
@@ -54,13 +53,19 @@ fun MainScreen() {
             NudokuScreen(navController, isCurrentGame, difficulty)
         }
 
-        composable("${Routes.EndScreen.route}/{gameState}/{difficulty}/{time}") { backStackEntry ->
-            val gameStateStr = backStackEntry.arguments?.getString("gameState")
-            val gameState = GameState.valueOf(gameStateStr ?: GameState.LOST.name)
-            val difficultyStr = backStackEntry.arguments?.getString("difficulty")
-            val difficulty = Difficulty.valueOf(difficultyStr ?: Difficulty.EASY.name)
-            val time = backStackEntry.arguments?.getInt("time") ?: 0
-            EndScreen(navController, gameState, difficulty, time)
+        composable("${Routes.EndScreen.route}/{gameState}/{difficulty}/{time}/{errors}") { backStackEntry ->
+            val gameStateStr = backStackEntry.arguments?.getString("gameState") ?: GameState.LOST.name
+            val difficultyStr = backStackEntry.arguments?.getString("difficulty") ?: Difficulty.EASY.name
+            val timeStr = backStackEntry.arguments?.getString("time") ?: "0"
+            val errorsStr = backStackEntry.arguments?.getString("errors") ?: "0"
+
+            EndScreen(
+                navController = navController,
+                gameState = GameState.valueOf(gameStateStr),
+                difficulty = Difficulty.valueOf(difficultyStr),
+                time = timeStr.toIntOrNull() ?: 0,
+                errors = errorsStr.toIntOrNull() ?: 0
+            )
         }
 
         composable(Routes.Profile.route) {

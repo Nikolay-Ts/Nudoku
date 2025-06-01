@@ -1,7 +1,5 @@
-package com.sonnenstahl.nukodu
+package com.sonnenstahl.nukodu.ui
 
-import android.content.Context
-import android.util.Log
 import com.sonnenstahl.nukodu.utils.importLoadedGame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.sonnenstahl.nukodu.com.sonnenstahl.nukodu.NumberButtons
 import com.sonnenstahl.nukodu.ui.theme.Background
 import com.sonnenstahl.nukodu.utils.CURRENT_GAME_FN
 import com.sonnenstahl.nukodu.utils.Difficulty
@@ -45,7 +42,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
         Array(9) { row -> Array(9) { col -> Tile(cell = Pos(row, col)) } }
     }
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
-    val numbersDisappear = remember { mutableStateMapOf(*(1..9).map { it to false }.toTypedArray()) }
     val gameState = remember { mutableStateOf(GameState.RUNNING) }
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
     val eraserMode = remember { mutableStateOf(false) }
@@ -95,11 +91,12 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L)
-            if (gameState.value == GameState.RUNNING) {
-                gameTimeSeconds.intValue++
-            }
-
             saveGame.withLock {
+                if (gameState.value == GameState.RUNNING) {
+                    gameTimeSeconds.intValue++
+                }
+
+
                 updateAndSave(
                     difficulty = difficulty,
                     nudokuGrid = nudokuGrid,
@@ -137,8 +134,15 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                     time = gameTimeSeconds.intValue,
                     context = context
                 )
+
+                navController.navigate(
+                    "${Routes.EndScreen.route}/" +
+                            "${gameState.value.name}/" +
+                            "${difficulty.name}/" +
+                            "${gameTimeSeconds.intValue}/" +
+                            "${errors.intValue}"
+                )
             }
-            navController.navigate("${Routes.EndScreen.route}/${gameState.value.name}/${difficulty.name}/$gameTimeSeconds")
         }
     }
 
@@ -226,7 +230,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                         // chosen number
                         if (nudokuGrid[i][j].number != currentlySelected && nudokuGrid[i][j].isCompleted) {
                             currentlySelected = 0
-
                         }
 
                         selectedCell = i to j
@@ -235,7 +238,6 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                             currentlySelected,
                             nudokuGrid,
                             numbersLeft,
-                            numbersDisappear,
                             errors,
                             gameState,
                             context,
@@ -305,13 +307,13 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                         isSelected = (currentlySelected == i && numbersLeft[i]!! > 0),
                         enabled = (numbersLeft[i]!! != 0),
                         numbersLeft = numbersLeft,
-                        canDissapear = numbersDisappear
                     ) {
                         currentlySelected = if (currentlySelected != i) i else 0
                         eraserMode.value = false
 
                         selectedCell?.let { (row, col) ->
-                            if (currentlySelected != nudokuGrid[row][col].number) {
+                            val number = nudokuGrid[row][col].number
+                            if (currentlySelected != number && number != 0) {
                                 selectedCell = null
                                 return@NumberButtons
                             }
@@ -321,13 +323,11 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                                 currentlySelected,
                                 nudokuGrid,
                                 numbersLeft,
-                                numbersDisappear,
                                 errors,
                                 gameState,
                                 context,
                             ) {
                                 selectedCell = null
-                                currentlySelected = 0
                             }
                         }
                     }
