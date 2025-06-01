@@ -114,15 +114,17 @@ fun ProfileScreen(navController: NavController) {
             .groupingBy { "${it.month.name} ${it.year}" }
             .eachCount()
             .toSortedMap()
+            .filter { it.value > 0 }
 
         val entries = grouped.entries.mapIndexed { i, entry ->
             BarEntry(i.toFloat(), entry.value.toFloat())
         }
-
         val labels = grouped.keys.toList()
 
         entries to labels
     }
+
+
     val byDayOfWeekData: Pair<List<BarEntry>, List<String>> = run {
         val grouped = user.gameCompletionDates
             .groupingBy { it.dayOfWeek.name.lowercase().replaceFirstChar { c -> c.uppercase() } }

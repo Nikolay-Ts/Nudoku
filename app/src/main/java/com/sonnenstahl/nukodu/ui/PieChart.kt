@@ -26,7 +26,7 @@ fun PieChartView(
             val dataSet = PieDataSet(data, title)
             dataSet.colors = colors
             this.data = PieData(dataSet)
-
+            legend.isEnabled = false
             description.isEnabled = false
             isDrawHoleEnabled = false
             animateY(1000)

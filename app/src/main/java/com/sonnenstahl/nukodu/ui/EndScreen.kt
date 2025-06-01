@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +48,7 @@ fun EndScreen(
     time: Int,
     errors: Int
 ) {
-    BackHandler { /*PREVENTS GOING BACK TO GAME*/}
+    BackHandler(enabled = false) { /*PREVENT GOIN BACK*/}
 
     var showSheet by remember { mutableStateOf(false) }
     val isBestTime = remember { mutableStateOf(false) }
@@ -66,9 +67,19 @@ fun EndScreen(
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
+        Button(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(vertical = 20.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            onClick = { navController.navigate(Routes.Profile.route) }
+        ) {
+            SvgImageFromAssets("profile-icon.svg", scale = 5.0f)
+        }
+
         // Center content
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.align(Alignment.Center).padding(5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -83,13 +94,14 @@ fun EndScreen(
                 val formattedTime = String.format("%02d:%02d", minutes, seconds)
 
                 if (isBestTime.value) {
-                    Text("New Best Time")
+                    Text("New Best Time!")
 
                 }
 
-                Text("$time")
+                Text(formattedTime)
 
-                Text("$errors/3")
+                Text("Mistakes", modifier = Modifier.padding(top = 10.dp))
+                Text("$errors/3 ")
 
             } else {
                 Text("❌ Game Over")

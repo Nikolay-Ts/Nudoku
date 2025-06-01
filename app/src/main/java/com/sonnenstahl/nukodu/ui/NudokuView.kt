@@ -1,5 +1,6 @@
 package com.sonnenstahl.nukodu.ui
 
+import androidx.activity.compose.BackHandler
 import com.sonnenstahl.nukodu.utils.importLoadedGame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -49,6 +50,9 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
     val context = LocalContext.current
     val saveGame = remember { Mutex() }
 
+    // this is so that after playing a new game from EndScreen, you still go back to the main menu
+    BackHandler(enabled = true) { navController.navigate(Routes.Home.route)}
+
     LaunchedEffect(Unit) {
         when (currentGameFile) {
             true -> { // loads the game from disk
@@ -69,7 +73,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
 
             false -> { // creates a new game and saves to disk
                 val removeNum = when (difficulty) {
-                    Difficulty.EASY -> 20
+                    Difficulty.EASY -> 1
                     Difficulty.MEDIUM -> 30
                     Difficulty.HARD -> 40
                     Difficulty.EXPERT -> 50
