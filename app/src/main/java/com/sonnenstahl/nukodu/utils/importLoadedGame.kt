@@ -13,6 +13,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 fun importLoadedGame(
     game: Game,
     nudokuGrid: Array<Array<Tile>>,
+    originalGrid: Array<Array<Tile>>,
     numbersLeft: SnapshotStateMap<Int, Int>,
     errors: MutableIntState,
     gameState: MutableState<GameState>,
@@ -25,6 +26,7 @@ fun importLoadedGame(
     for (row in 0..8) {
         for (col in 0..8) {
             nudokuGrid[row][col] = game.nudokuGrid[row][col]
+            originalGrid[row][col] = game.originalGrid[row][col]
             val number = nudokuGrid[row][col].number
 
             if (number == 0) {
@@ -45,6 +47,7 @@ fun importLoadedGame(
 fun updateAndSave(
     difficulty: Difficulty,
     nudokuGrid: Array<Array<Tile>>,
+    originalGrid: Array<Array<Tile>>,
     errors: Int,
     gameState: GameState,
     time: Int,
@@ -53,6 +56,7 @@ fun updateAndSave(
     val newGame = Game(
         difficulty = difficulty,
         nudokuGrid = nudokuGrid,
+        originalGrid = originalGrid,
         errors = errors,
         gameState = gameState,
         time = time

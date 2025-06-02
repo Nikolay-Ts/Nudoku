@@ -149,34 +149,34 @@ private fun removeNumbers(
  * a new sudoku pattern with k elements missing in it
  * this should only be called once or will crash the app
  */
-fun createNudoku(grid: Array<Array<Tile>>, numbersLeft: SnapshotStateMap<Int, Int>, k: Int) {
+fun createNudoku(
+    grid: Array<Array<Tile>>,
+    numbersLeft: SnapshotStateMap<Int, Int>,
+    k: Int
+): Array<Array<Tile>> {
     fillDiagonal(grid, numbersLeft)
     fillRemaining(grid, numbersLeft,  0, 0)
+
+    val originalGrid = cloneGrid(grid)
+
     removeNumbers(grid, numbersLeft, k)
+
+    return  originalGrid
 }
 
-
-fun validateTile(grid: Array<Array<Tile>>, row: Int, col: Int, number: Int): Boolean {
-    // Check row
-    for (j in 0..<9) {
-        if (j != col && grid[row][j].number == number) return false
-    }
-
-    // Check column
-    for (i in 0..<9) {
-        if (i != row && grid[i][col].number == number) return false
-    }
-
-    // Check box
-    val boxRowStart = row - row % 3
-    val boxColStart = col - col % 3
-    for (i in 0..<3) {
-        for (j in 0..<3) {
-            val r = boxRowStart + i
-            val c = boxColStart + j
-            if ((r != row || c != col) && grid[r][c].number == number) return false
+/**
+ * just so that we can have an og grid and just compare current index,
+ * makes comparison constant time
+ */
+fun cloneGrid(grid: Array<Array<Tile>>): Array<Array<Tile>> {
+    return Array(9) { i ->
+        Array(9) { j ->
+            val original = grid[i][j]
+            Tile(
+                number = original.number,
+                cell = original.cell.copy(),
+                isCompleted = original.isCompleted
+            )
         }
     }
-
-    return true
 }

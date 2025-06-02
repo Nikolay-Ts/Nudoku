@@ -42,6 +42,9 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
     val nudokuGrid = remember {
         Array(9) { row -> Array(9) { col -> Tile(cell = Pos(row, col)) } }
     }
+    val originalGrid = remember {
+        mutableStateOf(Array(9) { row -> Array(9) { col -> Tile(cell = Pos(row, col)) } })
+    }
     val numbersLeft = remember { mutableStateMapOf(*(1..9).map { it to 9 }.toTypedArray()) }
     val gameState = remember { mutableStateOf(GameState.RUNNING) }
     val gameTimeSeconds = remember { mutableIntStateOf(0) }
@@ -64,6 +67,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                 importLoadedGame(
                     game = game,
                     nudokuGrid = nudokuGrid,
+                    originalGrid = originalGrid.value,
                     numbersLeft = numbersLeft,
                     errors = errors,
                     gameState = gameState,
@@ -73,16 +77,17 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
 
             false -> { // creates a new game and saves to disk
                 val removeNum = when (difficulty) {
-                    Difficulty.EASY -> 1
+                    Difficulty.EASY -> 20
                     Difficulty.MEDIUM -> 30
                     Difficulty.HARD -> 40
                     Difficulty.EXPERT -> 50
                 }
 
-                createNudoku(nudokuGrid, numbersLeft, removeNum)
+                originalGrid.value = createNudoku(nudokuGrid, numbersLeft, removeNum)
                 updateAndSave(
                     difficulty = Difficulty.EASY,
                     nudokuGrid = nudokuGrid,
+                    originalGrid = originalGrid.value,
                     errors = errors.intValue,
                     gameState = gameState.value,
                     time = gameTimeSeconds.intValue,
@@ -104,6 +109,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                 updateAndSave(
                     difficulty = difficulty,
                     nudokuGrid = nudokuGrid,
+                    originalGrid = originalGrid.value,
                     errors = errors.intValue,
                     gameState = gameState.value,
                     time = gameTimeSeconds.intValue,
@@ -118,6 +124,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
             updateAndSave(
                 difficulty = difficulty,
                 nudokuGrid = nudokuGrid,
+                originalGrid = originalGrid.value,
                 errors = errors.intValue,
                 gameState = gameState.value,
                 time = gameTimeSeconds.intValue,
@@ -133,6 +140,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                 updateAndSave(
                     difficulty = difficulty,
                     nudokuGrid = nudokuGrid,
+                    originalGrid = originalGrid.value,
                     errors = errors.intValue,
                     gameState = gameState.value,
                     time = gameTimeSeconds.intValue,
@@ -241,6 +249,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                             i, j,
                             currentlySelected,
                             nudokuGrid,
+                            originalGrid.value,
                             numbersLeft,
                             errors,
                             gameState,
@@ -326,6 +335,7 @@ fun NudokuScreen(navController: NavController, currentGameFile: Boolean, difficu
                                 row, col,
                                 currentlySelected,
                                 nudokuGrid,
+                                originalGrid.value,
                                 numbersLeft,
                                 errors,
                                 gameState,

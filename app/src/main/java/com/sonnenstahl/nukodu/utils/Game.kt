@@ -15,6 +15,7 @@ enum class Difficulty {
 @Serializable
 data class Game (
     val difficulty: Difficulty,
+    var originalGrid: Array<Array<Tile>>,
     var nudokuGrid: Array<Array<Tile>>,
     var errors: Int,
     var gameState: GameState,
